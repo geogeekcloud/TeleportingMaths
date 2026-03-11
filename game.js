@@ -16,6 +16,7 @@ const closeShopBtn = document.getElementById('close-shop-btn');
 const inventoryList = document.getElementById('inventory-list');
 const howMadeBtn = document.getElementById('how-made-btn');
 const gameTitle = document.getElementById('game-title');
+const superResetBtn = document.getElementById('super-reset-btn');
 
 let score = 0;
 let coins = 0;
@@ -466,6 +467,21 @@ closeShopBtn.addEventListener('click', () => {
 
 howMadeBtn.addEventListener('click', () => {
     window.location.href = 'how-i-made-this.html';
+});
+
+superResetBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to reset everything? This will delete all your coins, items, and score!')) {
+        score = 0;
+        coins = 0;
+        inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true };
+        equipped = { hat: 'blueHat', cape: false, face: false, chair: false };
+        scoreValue.textContent = score;
+        coinsValue.textContent = coins;
+        localStorage.removeItem('portalMathGame');
+        saveProgress();
+        updateInventoryDisplay();
+        alert('Everything has been reset!');
+    }
 });
 
 document.querySelectorAll('.buy-btn').forEach(btn => {

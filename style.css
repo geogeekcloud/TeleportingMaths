@@ -7,29 +7,27 @@
 body {
     font-family: Arial, sans-serif;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+}
+
+#game-title {
+    color: white;
+    font-size: 56px;
+    font-weight: bold;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 #game-container {
     position: relative;
     width: 800px;
     height: 600px;
-}
-
-#game-title {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    font-size: 36px;
-    font-weight: bold;
-    text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
-    z-index: 100;
-    margin: 0;
 }
 
 #how-made-btn {
@@ -92,6 +90,25 @@ body {
 
 #shop-btn:hover {
     background: #1E90FF;
+}
+
+#super-reset-btn {
+    position: absolute;
+    top: 160px;
+    right: 10px;
+    background: #DC143C;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    z-index: 100;
+}
+
+#super-reset-btn:hover {
+    background: #B22222;
 }
 
 #portal-room {
