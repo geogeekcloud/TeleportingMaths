@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teleporting Maths</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="score">Score: <span id="score-value">0</span> / 30</div>
+        <div id="coins">Coins: <span id="coins-value">0</span></div>
+        <button id="shop-btn">Shop</button>
+        
+        <div id="portal-room">
+            <canvas id="game-canvas" width="800" height="600"></canvas>
+        </div>
+        
+        <div id="question-room" class="hidden">
+            <div id="question"></div>
+            <input type="number" id="answer-input" placeholder="Your answer">
+            <button id="submit-btn">Submit</button>
+            <div id="feedback"></div>
+        </div>
+        
+        <div id="shop-screen" class="hidden">
+            <h2>Shop</h2>
+            <div class="shop-items">
+                <div class="shop-item">
+                    <span>Yellow Hat</span>
+                    <button class="buy-btn" data-item="yellowHat" data-price="10">10 Coins</button>
+                </div>
+                <div class="shop-item">
+                    <span>Red Cap</span>
+                    <button class="buy-btn" data-item="redCap" data-price="5">5 Coins</button>
+                </div>
+                <div class="shop-item">
+                    <span>Green Cap</span>
+                    <button class="buy-btn" data-item="greenCap" data-price="5">5 Coins</button>
+                </div>
+                <div class="shop-item">
+                    <span>Cape</span>
+                    <button class="buy-btn" data-item="cape" data-price="1">1 Coin</button>
+                </div>
+                <div class="shop-item">
+                    <span>Face (Eyes & Smile)</span>
+                    <button class="buy-btn" data-item="face" data-price="3">3 Coins</button>
+                </div>
+                <div class="shop-item">
+                    <span>Flying Chair</span>
+                    <button class="buy-btn" data-item="flyingChair" data-price="5">5 Coins</button>
+                </div>
+            </div>
+            <h3>Your Inventory</h3>
+            <div id="inventory-list"></div>
+            <button id="close-shop-btn">Close</button>
+        </div>
+        
+        <div id="win-screen" class="hidden">
+            <h1>🎉 You Win! 🎉</h1>
+            <p>You completed all 30 questions!</p>
+            <button id="restart-btn">Play Again</button>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>

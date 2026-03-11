@@ -1,0 +1,283 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+#game-container {
+    position: relative;
+    width: 800px;
+    height: 600px;
+}
+
+#score {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    z-index: 100;
+}
+
+#coins {
+    position: absolute;
+    top: 60px;
+    right: 10px;
+    background: #FFD700;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    z-index: 100;
+}
+
+#shop-btn {
+    position: absolute;
+    top: 110px;
+    right: 10px;
+    background: #4169E1;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    z-index: 100;
+}
+
+#shop-btn:hover {
+    background: #1E90FF;
+}
+
+#portal-room {
+    width: 100%;
+    height: 100%;
+    background: #87CEEB;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+#game-canvas {
+    display: block;
+    border-radius: 10px;
+}
+
+#question-room {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #4169E1 0%, #1E90FF 100%);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+#question {
+    font-size: 48px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+#answer-input {
+    width: 200px;
+    padding: 15px;
+    font-size: 24px;
+    border: none;
+    border-radius: 10px;
+    text-align: center;
+}
+
+#submit-btn {
+    padding: 15px 40px;
+    font-size: 20px;
+    background: #FFD700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#submit-btn:hover {
+    background: #FFA500;
+}
+
+#feedback {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    min-height: 30px;
+}
+
+#win-screen {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+#shop-screen {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #9370DB 0%, #8A2BE2 100%);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    overflow-y: auto;
+}
+
+#shop-screen h2 {
+    font-size: 48px;
+    color: white;
+    margin: 0;
+}
+
+#shop-screen h3 {
+    font-size: 32px;
+    color: white;
+    margin: 20px 0 10px 0;
+}
+
+#inventory-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 400px;
+}
+
+.inventory-item {
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.equip-btn {
+    padding: 5px 15px;
+    font-size: 14px;
+    background: #4169E1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.equip-btn:hover {
+    background: #1E90FF;
+}
+
+.equip-btn.equipped {
+    background: #90EE90;
+    color: #333;
+}
+
+.shop-items {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 400px;
+}
+
+.shop-item {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.buy-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background: #FFD700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.buy-btn:hover {
+    background: #FFA500;
+}
+
+.buy-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+#close-shop-btn {
+    padding: 15px 40px;
+    font-size: 20px;
+    background: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#close-shop-btn:hover {
+    background: #f0f0f0;
+}
+
+#win-screen h1 {
+    font-size: 60px;
+    color: white;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+}
+
+#win-screen p {
+    font-size: 24px;
+    color: white;
+}
+
+#restart-btn {
+    padding: 15px 40px;
+    font-size: 20px;
+    background: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#restart-btn:hover {
+    background: #f0f0f0;
+}
+
+.hidden {
+    display: none !important;
+}
