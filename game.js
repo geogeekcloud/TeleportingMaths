@@ -33,8 +33,29 @@ function ensureNoOverlap() {
     const portalCenterY = portal.y + portal.height / 2;
     const coinDistance = Math.sqrt(Math.pow(coin.x - portalCenterX, 2) + Math.pow(coin.y - portalCenterY, 2));
     
-    if (coinDistance < 100) {
+    // Check coin doesn't overlap with portal
+    if (coinDistance < 150) {
         spawnCoin();
+        ensureNoOverlap();
+        return;
+    }
+    
+    // Check coin doesn't overlap with player
+    const playerCenterX = player.x + player.width / 2;
+    const playerCenterY = player.y + player.height / 2;
+    const coinPlayerDistance = Math.sqrt(Math.pow(coin.x - playerCenterX, 2) + Math.pow(coin.y - playerCenterY, 2));
+    
+    if (coinPlayerDistance < 100) {
+        spawnCoin();
+        ensureNoOverlap();
+        return;
+    }
+    
+    // Check portal doesn't overlap with player
+    const portalPlayerDistance = Math.sqrt(Math.pow(portalCenterX - playerCenterX, 2) + Math.pow(portalCenterY - playerCenterY, 2));
+    
+    if (portalPlayerDistance < 150) {
+        movePortal();
         ensureNoOverlap();
     }
 }
@@ -168,8 +189,9 @@ function drawCoin() {
 }
 
 function spawnCoin() {
-    coin.x = Math.floor(Math.random() * (canvas.width - 200)) + 100;
-    coin.y = Math.floor(Math.random() * (canvas.height - 200)) + 100;
+    // Avoid top-right corner where buttons are (200px from right, 180px from top)
+    coin.x = Math.floor(Math.random() * (canvas.width - 300)) + 100;
+    coin.y = Math.floor(Math.random() * (canvas.height - 250)) + 150;
     coin.collected = false;
 }
 
@@ -196,13 +218,19 @@ function checkCollision() {
 }
 
 function movePortal() {
-    const minX = 200;
-    const maxX = canvas.width - 200;
-    const minY = 100;
+    // Avoid top-right corner where buttons are
+    const minX = 100;
+    const maxX = canvas.width - 250;
+    const minY = 150;
     const maxY = canvas.height - 200;
     
     portal.x = Math.floor(Math.random() * (maxX - minX)) + minX;
     portal.y = Math.floor(Math.random() * (maxY - minY)) + minY;
+    
+    // Keep portal away from top-right corner (buttons area)
+    if (portal.x > canvas.width - 300 && portal.y < 200) {
+        portal.x = canvas.width - 400;
+    }
     
     if (portal.y < 50 || portal.y > canvas.height - 100) {
         portal.width = 150;
