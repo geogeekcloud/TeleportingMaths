@@ -386,10 +386,15 @@ restartBtn.addEventListener('click', () => {
 });
 
 shopBtn.addEventListener('click', () => {
-    keys = {};
-    portalRoom.classList.add('hidden');
-    shopScreen.classList.remove('hidden');
-    updateInventoryDisplay();
+    if (!shopScreen.classList.contains('hidden')) {
+        shopScreen.classList.add('hidden');
+        portalRoom.classList.remove('hidden');
+    } else {
+        keys = {};
+        portalRoom.classList.add('hidden');
+        shopScreen.classList.remove('hidden');
+        updateInventoryDisplay();
+    }
 });
 
 closeShopBtn.addEventListener('click', () => {
