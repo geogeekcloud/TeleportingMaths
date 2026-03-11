@@ -511,7 +511,7 @@ function checkAnswer() {
 
 function update() {
     // Set speed based on flying chair
-    const currentSpeed = (equipped.chair && inventory.flyingChair) ? 8 : 5;
+    const currentSpeed = (equipped.chair && inventory.flyingChair) ? 18 : 5;
     
     if (keys['a'] || keys['A']) {
         if (player.x > 0) player.x -= currentSpeed;
