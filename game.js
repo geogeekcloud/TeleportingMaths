@@ -19,7 +19,7 @@ const gameTitle = document.getElementById('game-title');
 const superResetBtn = document.getElementById('super-reset-btn');
 
 let score = 0;
-let coins = 0;
+let coins = 5;
 let currentAnswer = 0;
 let player = { x: 100, y: 300, width: 30, height: 50, speed: 5, direction: 'right' };
 let portal = { x: 650, y: 275, width: 80, height: 150 };
@@ -107,11 +107,13 @@ function loadProgress() {
     if (saved) {
         const data = JSON.parse(saved);
         score = data.score || 0;
-        coins = data.coins || 0;
+        coins = data.coins !== undefined ? data.coins : 5;
         inventory = data.inventory || { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true };
         equipped = data.equipped || { hat: 'blueHat', cape: false, face: false, chair: false };
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
+    } else {
+        coinsValue.textContent = 5;
     }
 }
 
