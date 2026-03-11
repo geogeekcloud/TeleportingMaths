@@ -35,27 +35,55 @@ let equipped = { hat: 'blueHat', cape: false, face: false, chair: false };
 function ensureNoOverlap() {
     const portalCenterX = portal.x + portal.width / 2;
     const portalCenterY = portal.y + portal.height / 2;
-    const coinDistance = Math.sqrt(Math.pow(coin.x - portalCenterX, 2) + Math.pow(coin.y - portalCenterY, 2));
     
     // Check coin doesn't overlap with portal
-    if (coinDistance < 150) {
-        spawnCoin();
-        ensureNoOverlap();
-        return;
+    if (!coin.collected) {
+        const coinDistance = Math.sqrt(Math.pow(coin.x - portalCenterX, 2) + Math.pow(coin.y - portalCenterY, 2));
+        if (coinDistance < 150) {
+            spawnCoin();
+            ensureNoOverlap();
+            return;
+        }
+        
+        // Check coin doesn't overlap with player
+        const playerCenterX = player.x + player.width / 2;
+        const playerCenterY = player.y + player.height / 2;
+        const coinPlayerDistance = Math.sqrt(Math.pow(coin.x - playerCenterX, 2) + Math.pow(coin.y - playerCenterY, 2));
+        
+        if (coinPlayerDistance < 100) {
+            spawnCoin();
+            ensureNoOverlap();
+            return;
+        }
     }
     
-    // Check coin doesn't overlap with player
-    const playerCenterX = player.x + player.width / 2;
-    const playerCenterY = player.y + player.height / 2;
-    const coinPlayerDistance = Math.sqrt(Math.pow(coin.x - playerCenterX, 2) + Math.pow(coin.y - playerCenterY, 2));
-    
-    if (coinPlayerDistance < 100) {
-        spawnCoin();
-        ensureNoOverlap();
-        return;
+    // Check suitcase doesn't overlap with portal
+    if (!suitcase.collected) {
+        const suitcaseCenterX = suitcase.x + suitcase.width / 2;
+        const suitcaseCenterY = suitcase.y + suitcase.height / 2;
+        const suitcaseDistance = Math.sqrt(Math.pow(suitcaseCenterX - portalCenterX, 2) + Math.pow(suitcaseCenterY - portalCenterY, 2));
+        
+        if (suitcaseDistance < 150) {
+            spawnSuitcase();
+            ensureNoOverlap();
+            return;
+        }
+        
+        // Check suitcase doesn't overlap with player
+        const playerCenterX = player.x + player.width / 2;
+        const playerCenterY = player.y + player.height / 2;
+        const suitcasePlayerDistance = Math.sqrt(Math.pow(suitcaseCenterX - playerCenterX, 2) + Math.pow(suitcaseCenterY - playerCenterY, 2));
+        
+        if (suitcasePlayerDistance < 100) {
+            spawnSuitcase();
+            ensureNoOverlap();
+            return;
+        }
     }
     
     // Check portal doesn't overlap with player
+    const playerCenterX = player.x + player.width / 2;
+    const playerCenterY = player.y + player.height / 2;
     const portalPlayerDistance = Math.sqrt(Math.pow(portalCenterX - playerCenterX, 2) + Math.pow(portalCenterY - playerCenterY, 2));
     
     if (portalPlayerDistance < 150) {
@@ -614,5 +642,6 @@ loadProgress();
 updateInventoryDisplay();
 movePortal();
 spawnCoin();
+suitcase.collected = true; // Start with suitcase collected
 ensureNoOverlap();
 gameLoop();
