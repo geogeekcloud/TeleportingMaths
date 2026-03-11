@@ -145,11 +145,48 @@ function drawPlayer() {
     }
     
     if (equipped.chair && inventory.flyingChair) {
+        // Chair seat
         ctx.fillStyle = '#8B4513';
         ctx.fillRect(player.x - 5, player.y + 40, 40, 5);
+        
+        // Chair back legs
         ctx.fillRect(player.x - 5, player.y + 20, 5, 20);
         ctx.fillRect(player.x + 30, player.y + 20, 5, 20);
+        
+        // Chair backrest
         ctx.fillRect(player.x - 5, player.y + 10, 5, 15);
+        
+        // Person's legs stretched out in front
+        ctx.fillStyle = '#FFD7B5';
+        ctx.fillRect(player.x + 5, player.y + 45, 8, 25); // Left leg
+        ctx.fillRect(player.x + 17, player.y + 45, 8, 25); // Right leg
+        
+        // Feet
+        ctx.fillStyle = '#654321';
+        ctx.fillRect(player.x + 3, player.y + 70, 10, 6); // Left foot
+        ctx.fillRect(player.x + 17, player.y + 70, 10, 6); // Right foot
+        
+        // Left jetpack
+        ctx.fillStyle = '#C0C0C0';
+        ctx.fillRect(player.x - 12, player.y + 25, 8, 18);
+        ctx.fillStyle = '#FF4500';
+        ctx.beginPath();
+        ctx.moveTo(player.x - 10, player.y + 43);
+        ctx.lineTo(player.x - 12, player.y + 50);
+        ctx.lineTo(player.x - 8, player.y + 50);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Right jetpack
+        ctx.fillStyle = '#C0C0C0';
+        ctx.fillRect(player.x + 34, player.y + 25, 8, 18);
+        ctx.fillStyle = '#FF4500';
+        ctx.beginPath();
+        ctx.moveTo(player.x + 38, player.y + 43);
+        ctx.lineTo(player.x + 36, player.y + 50);
+        ctx.lineTo(player.x + 40, player.y + 50);
+        ctx.closePath();
+        ctx.fill();
     }
     
     ctx.fillStyle = '#FFD7B5';
