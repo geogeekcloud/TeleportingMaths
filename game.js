@@ -264,6 +264,11 @@ function checkAnswer() {
             }, 1000);
         }
     } else {
+        if (coins > 0) {
+            coins--;
+            coinsValue.textContent = coins;
+            saveProgress();
+        }
         feedbackEl.textContent = '✗ Try again!';
         feedbackEl.style.color = '#FF6B6B';
         answerInput.value = '';
