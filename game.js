@@ -24,6 +24,9 @@ let currentAnswer = 0;
 let player = { x: 100, y: 300, width: 30, height: 50, speed: 5, direction: 'right' };
 let portal = { x: 650, y: 275, width: 80, height: 150 };
 let coin = { x: 0, y: 0, radius: 15, collected: false };
+let suitcase = { x: 0, y: 0, width: 30, height: 25, collected: false };
+let coinFrenzy = { active: false, timeLeft: 0, spawnTimer: 0 };
+let frenzyCoins = [];
 let keys = {};
 let canEnterPortal = true;
 let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true };
@@ -189,11 +192,54 @@ function drawCoin() {
     }
 }
 
+function drawSuitcase() {
+    if (!suitcase.collected) {
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(suitcase.x, suitcase.y, suitcase.width, suitcase.height);
+        ctx.fillStyle = '#DAA520';
+        ctx.fillRect(suitcase.x + 2, suitcase.y + 2, suitcase.width - 4, suitcase.height - 4);
+        ctx.strokeStyle = '#654321';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(suitcase.x, suitcase.y, suitcase.width, suitcase.height);
+        ctx.fillStyle = '#000';
+        ctx.fillRect(suitcase.x + suitcase.width / 2 - 3, suitcase.y - 5, 6, 8);
+    }
+}
+
+function drawFrenzyCoins() {
+    frenzyCoins.forEach(fCoin => {
+        if (!fCoin.collected) {
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(fCoin.x, fCoin.y, 12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#FFA500';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+    });
+}
+
 function spawnCoin() {
     // Avoid top-right corner where buttons are (200px from right, 180px from top)
     coin.x = Math.floor(Math.random() * (canvas.width - 300)) + 100;
     coin.y = Math.floor(Math.random() * (canvas.height - 250)) + 150;
     coin.collected = false;
+}
+
+function spawnSuitcase() {
+    suitcase.x = Math.floor(Math.random() * (canvas.width - 300)) + 100;
+    suitcase.y = Math.floor(Math.random() * (canvas.height - 250)) + 150;
+    suitcase.collected = false;
+}
+
+function spawnFrenzyCoin() {
+    const newCoin = {
+        x: Math.floor(Math.random() * (canvas.width - 200)) + 100,
+        y: Math.floor(Math.random() * (canvas.height - 200)) + 100,
+        collected: false
+    };
+    frenzyCoins.push(newCoin);
 }
 
 function checkCoinCollision() {
@@ -209,6 +255,35 @@ function checkCoinCollision() {
             saveProgress();
         }
     }
+    
+    if (!suitcase.collected) {
+        const dx = player.x + player.width / 2 - (suitcase.x + suitcase.width / 2);
+        const dy = player.y + player.height / 2 - (suitcase.y + suitcase.height / 2);
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < 30) {
+            suitcase.collected = true;
+            coinFrenzy.active = true;
+            coinFrenzy.timeLeft = 30;
+            coinFrenzy.spawnTimer = 0;
+            frenzyCoins = [];
+        }
+    }
+    
+    frenzyCoins.forEach(fCoin => {
+        if (!fCoin.collected) {
+            const dx = player.x + player.width / 2 - fCoin.x;
+            const dy = player.y + player.height / 2 - fCoin.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 20) {
+                fCoin.collected = true;
+                coins++;
+                coinsValue.textContent = coins;
+                saveProgress();
+            }
+        }
+    });
 }
 
 function checkCollision() {
@@ -285,7 +360,14 @@ function showPortalRoom() {
     player.x = 100;
     player.y = 300;
     movePortal();
-    spawnCoin();
+    
+    // Every 10 rounds spawn suitcase instead of coin
+    if (score > 0 && score % 10 === 0) {
+        spawnSuitcase();
+    } else {
+        spawnCoin();
+    }
+    
     ensureNoOverlap();
     canEnterPortal = true;
     answerInput.blur();
@@ -345,6 +427,22 @@ function update() {
     
     checkCoinCollision();
     
+    // Update coin frenzy
+    if (coinFrenzy.active) {
+        coinFrenzy.timeLeft -= 1/60; // Decrease by frame time
+        coinFrenzy.spawnTimer += 1/60;
+        
+        if (coinFrenzy.spawnTimer >= 1) {
+            spawnFrenzyCoin();
+            coinFrenzy.spawnTimer = 0;
+        }
+        
+        if (coinFrenzy.timeLeft <= 0) {
+            coinFrenzy.active = false;
+            frenzyCoins = [];
+        }
+    }
+    
     if (checkCollision() && canEnterPortal) {
         canEnterPortal = false;
         showQuestionRoom();
@@ -355,8 +453,19 @@ function draw() {
     ctx.fillStyle = '#87CEEB';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     drawCoin();
+    drawSuitcase();
+    drawFrenzyCoins();
     drawPortal();
     drawPlayer();
+    
+    // Draw frenzy timer
+    if (coinFrenzy.active) {
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+        ctx.fillRect(10, 10, 200, 40);
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 20px Arial';
+        ctx.fillText(`COIN FRENZY: ${Math.ceil(coinFrenzy.timeLeft)}s`, 20, 35);
+    }
 }
 
 function gameLoop() {
