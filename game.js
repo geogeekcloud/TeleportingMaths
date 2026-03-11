@@ -511,7 +511,7 @@ function checkAnswer() {
 
 function update() {
     // Set speed based on flying chair
-    const currentSpeed = (equipped.chair && inventory.flyingChair) ? 18 : 5;
+    const currentSpeed = (equipped.chair === true && inventory.flyingChair === true) ? 18 : 5;
     
     if (keys['a'] || keys['A']) {
         if (player.x > 0) player.x -= currentSpeed;
@@ -686,7 +686,7 @@ howMadeBtn.addEventListener('click', () => {
 superResetBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to reset everything? This will delete all your coins, items, and score!')) {
         score = 0;
-        coins = 0;
+        coins = 5;
         inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true };
         equipped = { hat: 'blueHat', cape: false, face: false, chair: false };
         scoreValue.textContent = score;
@@ -695,6 +695,7 @@ superResetBtn.addEventListener('click', () => {
         saveProgress();
         updateInventoryDisplay();
         alert('Everything has been reset!');
+        location.reload();
     }
 });
 
