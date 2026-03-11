@@ -265,7 +265,9 @@ function checkAnswer() {
     
     if (userAnswer === currentAnswer) {
         score++;
+        coins++;
         scoreValue.textContent = score;
+        coinsValue.textContent = coins;
         feedbackEl.textContent = '✓ Correct!';
         feedbackEl.style.color = '#90EE90';
         saveProgress();
