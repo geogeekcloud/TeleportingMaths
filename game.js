@@ -227,7 +227,8 @@ function showQuestionRoom() {
     feedbackEl.textContent = '';
     setTimeout(() => {
         answerInput.focus();
-    }, 100);
+        answerInput.click();
+    }, 150);
 }
 
 function showPortalRoom() {
@@ -357,16 +358,18 @@ function updateInventoryDisplay() {
 }
 
 window.addEventListener('keydown', (e) => {
-    if (questionRoom.classList.contains('hidden') && document.activeElement !== answerInput) {
-        keys[e.key] = true;
-        e.preventDefault();
+    if (portalRoom.classList.contains('hidden') || shopScreen.classList.contains('hidden') === false) {
+        return;
     }
+    keys[e.key] = true;
+    e.preventDefault();
 });
 
 window.addEventListener('keyup', (e) => {
-    if (questionRoom.classList.contains('hidden') && document.activeElement !== answerInput) {
-        keys[e.key] = false;
+    if (portalRoom.classList.contains('hidden') || shopScreen.classList.contains('hidden') === false) {
+        return;
     }
+    keys[e.key] = false;
 });
 
 submitBtn.addEventListener('click', checkAnswer);
