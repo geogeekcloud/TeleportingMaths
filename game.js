@@ -508,20 +508,23 @@ function checkAnswer() {
 }
 
 function update() {
+    // Set speed based on flying chair
+    const currentSpeed = (equipped.chair && inventory.flyingChair) ? 8 : 5;
+    
     if (keys['a'] || keys['A']) {
-        if (player.x > 0) player.x -= player.speed;
+        if (player.x > 0) player.x -= currentSpeed;
         player.direction = 'left';
     }
     if (keys['d'] || keys['D']) {
-        if (player.x < canvas.width - player.width) player.x += player.speed;
+        if (player.x < canvas.width - player.width) player.x += currentSpeed;
         player.direction = 'right';
     }
     if (keys['w'] || keys['W']) {
-        if (player.y > 0) player.y -= player.speed;
+        if (player.y > 0) player.y -= currentSpeed;
         player.direction = 'up';
     }
     if (keys['s'] || keys['S']) {
-        if (player.y < canvas.height - player.height) player.y += player.speed;
+        if (player.y < canvas.height - player.height) player.y += currentSpeed;
         player.direction = 'down';
     }
     
