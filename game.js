@@ -14,6 +14,7 @@ const shopBtn = document.getElementById('shop-btn');
 const shopScreen = document.getElementById('shop-screen');
 const closeShopBtn = document.getElementById('close-shop-btn');
 const inventoryList = document.getElementById('inventory-list');
+const howMadeBtn = document.getElementById('how-made-btn');
 
 let score = 0;
 let coins = 0;
@@ -429,6 +430,10 @@ shopBtn.addEventListener('click', () => {
 closeShopBtn.addEventListener('click', () => {
     shopScreen.classList.add('hidden');
     portalRoom.classList.remove('hidden');
+});
+
+howMadeBtn.addEventListener('click', () => {
+    window.location.href = 'how-i-made-this.html';
 });
 
 document.querySelectorAll('.buy-btn').forEach(btn => {
