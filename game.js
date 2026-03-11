@@ -147,53 +147,48 @@ function drawPlayer() {
     
     // Draw flying chair with person sitting in it
     if (equipped.chair && inventory.flyingChair) {
-        // Chair seat
-        ctx.fillStyle = '#8B4513';
-        ctx.fillRect(player.x - 5, player.y + 40, 40, 5);
-        
-        // Chair back legs
-        ctx.fillRect(player.x - 5, player.y + 20, 5, 20);
-        ctx.fillRect(player.x + 30, player.y + 20, 5, 20);
-        
         // Chair backrest
-        ctx.fillRect(player.x - 5, player.y + 10, 5, 15);
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(player.x - 5, player.y + 15, 5, 25);
         
-        // Person's body sitting in chair
+        // Chair seat
+        ctx.fillRect(player.x - 5, player.y + 40, 25, 5);
+        
+        // Person's body sitting (side view)
         ctx.fillStyle = '#FFD7B5';
-        ctx.fillRect(player.x, player.y + 20, player.width, 20); // Torso sitting
+        ctx.fillRect(player.x, player.y + 25, 20, 15); // Torso
         
-        // Person's legs stretched out in front
-        ctx.fillRect(player.x + 5, player.y + 40, 8, 30); // Left leg
-        ctx.fillRect(player.x + 17, player.y + 40, 8, 30); // Right leg
+        // Person's legs bent sitting position
+        ctx.fillRect(player.x + 15, player.y + 35, 8, 15); // Upper leg
+        ctx.fillRect(player.x + 15, player.y + 50, 15, 8); // Lower leg stretched forward
         
-        // Feet
+        // Foot
         ctx.fillStyle = '#654321';
-        ctx.fillRect(player.x + 3, player.y + 70, 10, 6); // Left foot
-        ctx.fillRect(player.x + 17, player.y + 70, 10, 6); // Right foot
+        ctx.fillRect(player.x + 28, player.y + 50, 8, 10);
         
         // Head
         ctx.fillStyle = '#FFE4C4';
         ctx.beginPath();
-        ctx.arc(player.x + 15, player.y + 10, 15, 0, Math.PI * 2);
+        ctx.arc(player.x + 10, player.y + 18, 12, 0, Math.PI * 2);
         ctx.fill();
         
         // Face
         if (equipped.face && inventory.face) {
             ctx.fillStyle = '#000';
             ctx.beginPath();
-            ctx.arc(player.x + 10, player.y + 8, 2, 0, Math.PI * 2);
+            ctx.arc(player.x + 7, player.y + 16, 2, 0, Math.PI * 2);
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(player.x + 20, player.y + 8, 2, 0, Math.PI * 2);
+            ctx.arc(player.x + 13, player.y + 16, 2, 0, Math.PI * 2);
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(player.x + 15, player.y + 13, 5, 0, Math.PI);
+            ctx.arc(player.x + 10, player.y + 20, 4, 0, Math.PI);
             ctx.stroke();
         }
         
         // Hat on head
         ctx.fillStyle = '#FFD700';
-        ctx.fillRect(player.x + 5, player.y, 20, 8);
+        ctx.fillRect(player.x + 3, player.y + 8, 14, 6);
         
         let capColor = '#1E90FF';
         if (equipped.hat === 'yellowHat') capColor = '#FFD700';
@@ -201,27 +196,29 @@ function drawPlayer() {
         else if (equipped.hat === 'greenCap') capColor = '#00FF00';
         
         ctx.fillStyle = capColor;
-        ctx.fillRect(player.x + 3, player.y - 5, 24, 5);
+        ctx.fillRect(player.x + 2, player.y + 4, 16, 4);
         
-        // Left jetpack
+        // Left jetpack (behind chair)
         ctx.fillStyle = '#C0C0C0';
-        ctx.fillRect(player.x - 12, player.y + 25, 8, 18);
+        ctx.fillRect(player.x - 15, player.y + 30, 8, 15);
         ctx.fillStyle = '#FF4500';
         ctx.beginPath();
-        ctx.moveTo(player.x - 10, player.y + 43);
-        ctx.lineTo(player.x - 12, player.y + 50);
-        ctx.lineTo(player.x - 8, player.y + 50);
+        ctx.moveTo(player.x - 13, player.y + 45);
+        ctx.lineTo(player.x - 15, player.y + 52);
+        ctx.lineTo(player.x - 11, player.y + 52);
+        ctx.lineTo(player.x - 9, player.y + 48);
         ctx.closePath();
         ctx.fill();
         
-        // Right jetpack
+        // Right jetpack (in front of chair)
         ctx.fillStyle = '#C0C0C0';
-        ctx.fillRect(player.x + 34, player.y + 25, 8, 18);
+        ctx.fillRect(player.x + 22, player.y + 30, 8, 15);
         ctx.fillStyle = '#FF4500';
         ctx.beginPath();
-        ctx.moveTo(player.x + 38, player.y + 43);
-        ctx.lineTo(player.x + 36, player.y + 50);
-        ctx.lineTo(player.x + 40, player.y + 50);
+        ctx.moveTo(player.x + 26, player.y + 45);
+        ctx.lineTo(player.x + 24, player.y + 52);
+        ctx.lineTo(player.x + 28, player.y + 52);
+        ctx.lineTo(player.x + 30, player.y + 48);
         ctx.closePath();
         ctx.fill();
     } else {
