@@ -15,6 +15,7 @@ const shopScreen = document.getElementById('shop-screen');
 const closeShopBtn = document.getElementById('close-shop-btn');
 const inventoryList = document.getElementById('inventory-list');
 const howMadeBtn = document.getElementById('how-made-btn');
+const gameTitle = document.getElementById('game-title');
 
 let score = 0;
 let coins = 0;
@@ -419,10 +420,12 @@ shopBtn.addEventListener('click', () => {
     if (!shopScreen.classList.contains('hidden')) {
         shopScreen.classList.add('hidden');
         portalRoom.classList.remove('hidden');
+        gameTitle.style.display = 'block';
     } else {
         keys = {};
         portalRoom.classList.add('hidden');
         shopScreen.classList.remove('hidden');
+        gameTitle.style.display = 'none';
         updateInventoryDisplay();
     }
 });
@@ -430,6 +433,7 @@ shopBtn.addEventListener('click', () => {
 closeShopBtn.addEventListener('click', () => {
     shopScreen.classList.add('hidden');
     portalRoom.classList.remove('hidden');
+    gameTitle.style.display = 'block';
 });
 
 howMadeBtn.addEventListener('click', () => {
