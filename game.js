@@ -26,6 +26,17 @@ let canEnterPortal = true;
 let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true };
 let equipped = { hat: 'blueHat', cape: false, face: false, chair: false };
 
+function ensureNoOverlap() {
+    const portalCenterX = portal.x + portal.width / 2;
+    const portalCenterY = portal.y + portal.height / 2;
+    const coinDistance = Math.sqrt(Math.pow(coin.x - portalCenterX, 2) + Math.pow(coin.y - portalCenterY, 2));
+    
+    if (coinDistance < 100) {
+        spawnCoin();
+        ensureNoOverlap();
+    }
+}
+
 function saveProgress() {
     const saveData = {
         score,
@@ -155,8 +166,8 @@ function drawCoin() {
 }
 
 function spawnCoin() {
-    coin.x = Math.floor(Math.random() * (canvas.width - 100)) + 50;
-    coin.y = Math.floor(Math.random() * (canvas.height - 100)) + 50;
+    coin.x = Math.floor(Math.random() * (canvas.width - 200)) + 100;
+    coin.y = Math.floor(Math.random() * (canvas.height - 200)) + 100;
     coin.collected = false;
 }
 
@@ -183,10 +194,10 @@ function checkCollision() {
 }
 
 function movePortal() {
-    const minX = 50;
-    const maxX = canvas.width - 150;
-    const minY = 20;
-    const maxY = canvas.height - 170;
+    const minX = 200;
+    const maxX = canvas.width - 200;
+    const minY = 100;
+    const maxY = canvas.height - 200;
     
     portal.x = Math.floor(Math.random() * (maxX - minX)) + minX;
     portal.y = Math.floor(Math.random() * (maxY - minY)) + minY;
@@ -239,6 +250,7 @@ function showPortalRoom() {
     player.y = 300;
     movePortal();
     spawnCoin();
+    ensureNoOverlap();
     canEnterPortal = true;
     answerInput.blur();
 }
@@ -426,5 +438,7 @@ document.querySelectorAll('.buy-btn').forEach(btn => {
 
 loadProgress();
 updateInventoryDisplay();
+movePortal();
 spawnCoin();
+ensureNoOverlap();
 gameLoop();
