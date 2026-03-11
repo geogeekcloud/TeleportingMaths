@@ -236,10 +236,15 @@ function showQuestionRoom() {
     generateQuestion();
     answerInput.value = '';
     feedbackEl.textContent = '';
-    setTimeout(() => {
+    
+    // Force focus with multiple attempts
+    requestAnimationFrame(() => {
         answerInput.focus();
-        answerInput.click();
-    }, 150);
+        requestAnimationFrame(() => {
+            answerInput.focus();
+            answerInput.click();
+        });
+    });
 }
 
 function showPortalRoom() {
@@ -393,6 +398,11 @@ submitBtn.addEventListener('click', checkAnswer);
 
 answerInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') checkAnswer();
+});
+
+answerInput.addEventListener('focus', () => {
+    // Ensure keys object is cleared when input gets focus
+    keys = {};
 });
 
 restartBtn.addEventListener('click', () => {
