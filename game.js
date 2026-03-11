@@ -116,6 +116,7 @@ function loadProgress() {
 }
 
 function drawPlayer() {
+    // Draw cape first (behind character)
     if (equipped.cape && inventory.cape) {
         ctx.fillStyle = '#DC143C';
         ctx.beginPath();
@@ -144,6 +145,7 @@ function drawPlayer() {
         ctx.fill();
     }
     
+    // Draw flying chair with person sitting in it
     if (equipped.chair && inventory.flyingChair) {
         // Chair seat
         ctx.fillStyle = '#8B4513';
@@ -156,15 +158,50 @@ function drawPlayer() {
         // Chair backrest
         ctx.fillRect(player.x - 5, player.y + 10, 5, 15);
         
-        // Person's legs stretched out in front
+        // Person's body sitting in chair
         ctx.fillStyle = '#FFD7B5';
-        ctx.fillRect(player.x + 5, player.y + 45, 8, 25); // Left leg
-        ctx.fillRect(player.x + 17, player.y + 45, 8, 25); // Right leg
+        ctx.fillRect(player.x, player.y + 20, player.width, 20); // Torso sitting
+        
+        // Person's legs stretched out in front
+        ctx.fillRect(player.x + 5, player.y + 40, 8, 30); // Left leg
+        ctx.fillRect(player.x + 17, player.y + 40, 8, 30); // Right leg
         
         // Feet
         ctx.fillStyle = '#654321';
         ctx.fillRect(player.x + 3, player.y + 70, 10, 6); // Left foot
         ctx.fillRect(player.x + 17, player.y + 70, 10, 6); // Right foot
+        
+        // Head
+        ctx.fillStyle = '#FFE4C4';
+        ctx.beginPath();
+        ctx.arc(player.x + 15, player.y + 10, 15, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Face
+        if (equipped.face && inventory.face) {
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(player.x + 10, player.y + 8, 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(player.x + 20, player.y + 8, 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(player.x + 15, player.y + 13, 5, 0, Math.PI);
+            ctx.stroke();
+        }
+        
+        // Hat on head
+        ctx.fillStyle = '#FFD700';
+        ctx.fillRect(player.x + 5, player.y, 20, 8);
+        
+        let capColor = '#1E90FF';
+        if (equipped.hat === 'yellowHat') capColor = '#FFD700';
+        else if (equipped.hat === 'redCap') capColor = '#FF0000';
+        else if (equipped.hat === 'greenCap') capColor = '#00FF00';
+        
+        ctx.fillStyle = capColor;
+        ctx.fillRect(player.x + 3, player.y - 5, 24, 5);
         
         // Left jetpack
         ctx.fillStyle = '#C0C0C0';
@@ -187,38 +224,39 @@ function drawPlayer() {
         ctx.lineTo(player.x + 40, player.y + 50);
         ctx.closePath();
         ctx.fill();
-    }
-    
-    ctx.fillStyle = '#FFD7B5';
-    ctx.fillRect(player.x, player.y, player.width, player.height);
-    ctx.fillStyle = '#FFE4C4';
-    ctx.beginPath();
-    ctx.arc(player.x + 15, player.y - 10, 15, 0, Math.PI * 2);
-    ctx.fill();
-    
-    if (equipped.face && inventory.face) {
-        ctx.fillStyle = '#000';
+    } else {
+        // Draw standing character (when not in chair)
+        ctx.fillStyle = '#FFD7B5';
+        ctx.fillRect(player.x, player.y, player.width, player.height);
+        ctx.fillStyle = '#FFE4C4';
         ctx.beginPath();
-        ctx.arc(player.x + 10, player.y - 12, 2, 0, Math.PI * 2);
+        ctx.arc(player.x + 15, player.y - 10, 15, 0, Math.PI * 2);
         ctx.fill();
-        ctx.beginPath();
-        ctx.arc(player.x + 20, player.y - 12, 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(player.x + 15, player.y - 7, 5, 0, Math.PI);
-        ctx.stroke();
+        
+        if (equipped.face && inventory.face) {
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(player.x + 10, player.y - 12, 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(player.x + 20, player.y - 12, 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(player.x + 15, player.y - 7, 5, 0, Math.PI);
+            ctx.stroke();
+        }
+        
+        ctx.fillStyle = '#FFD700';
+        ctx.fillRect(player.x + 5, player.y - 20, 20, 8);
+        
+        let capColor = '#1E90FF';
+        if (equipped.hat === 'yellowHat') capColor = '#FFD700';
+        else if (equipped.hat === 'redCap') capColor = '#FF0000';
+        else if (equipped.hat === 'greenCap') capColor = '#00FF00';
+        
+        ctx.fillStyle = capColor;
+        ctx.fillRect(player.x + 3, player.y - 25, 24, 5);
     }
-    
-    ctx.fillStyle = '#FFD700';
-    ctx.fillRect(player.x + 5, player.y - 20, 20, 8);
-    
-    let capColor = '#1E90FF';
-    if (equipped.hat === 'yellowHat') capColor = '#FFD700';
-    else if (equipped.hat === 'redCap') capColor = '#FF0000';
-    else if (equipped.hat === 'greenCap') capColor = '#00FF00';
-    
-    ctx.fillStyle = capColor;
-    ctx.fillRect(player.x + 3, player.y - 25, 24, 5);
 }
 
 function drawPortal() {
