@@ -31,6 +31,7 @@ let keys = {};
 let canEnterPortal = true;
 let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false };
 let equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false };
+let spiralStartTime = 0; // Track when spiral started
 
 function ensureNoOverlap() {
     const portalCenterX = portal.x + portal.width / 2;
@@ -523,22 +524,33 @@ function update() {
     
     // Handle spiral movement
     if (equipped.spiral && inventory.spiral) {
-        // Spin in BIG circles across the whole screen - SUPER FAST!
-        const spinSpeed = 8; // Much faster!
-        const radius = 200; // HUGE circles to fill the screen!
-        const time = Date.now() / 100; // Faster spinning!
+        // Calculate time since spiral started
+        const timeSinceStart = (Date.now() - spiralStartTime) / 1000; // in seconds
         
-        player.x += Math.cos(time) * spinSpeed;
-        player.y += Math.sin(time) * spinSpeed;
+        // Spiral grows from 0 to full screen height over time
+        const maxRadius = canvas.height / 2; // Half screen height = full screen when spiraling
+        const growthTime = 5; // Takes 5 seconds to reach full size
+        const currentRadius = (timeSinceStart % growthTime) / growthTime * maxRadius; // Loops back to 0 after reaching max
         
-        // Keep player in bounds while spinning
+        // Spiral angle - spins faster as it grows
+        const angle = (Date.now() - spiralStartTime) / 150; // Controls rotation speed
+        
+        // Center of screen
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        
+        // Calculate position on spiral
+        player.x = centerX + Math.cos(angle) * currentRadius - player.width / 2;
+        player.y = centerY + Math.sin(angle) * currentRadius - player.height / 2;
+        
+        // Keep player in bounds
         if (player.x < 0) player.x = 0;
         if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
         if (player.y < 0) player.y = 0;
         if (player.y > canvas.height - player.height) player.y = canvas.height - player.height;
         
-        // Update direction based on spin
-        if (Math.cos(time) > 0) player.direction = 'right';
+        // Update direction based on movement
+        if (Math.cos(angle) > 0) player.direction = 'right';
         else player.direction = 'left';
     } else {
         // Normal movement with WASD
@@ -651,9 +663,16 @@ function updateInventoryDisplay() {
             } else if (item === 'flyingChair') {
                 equipped.chair = !equipped.chair;
             } else if (item === 'spiral') {
+                const wasEquipped = equipped.spiral;
                 equipped.spiral = !equipped.spiral;
-                // When unequipping spiral, teleport back to portal!
-                if (!equipped.spiral) {
+                
+                if (equipped.spiral && !wasEquipped) {
+                    // When equipping spiral, move to center and start timer
+                    player.x = canvas.width / 2 - player.width / 2;
+                    player.y = canvas.height / 2 - player.height / 2;
+                    spiralStartTime = Date.now();
+                } else if (!equipped.spiral) {
+                    // When unequipping spiral, teleport back to portal
                     player.x = portal.x + portal.width / 2 - player.width / 2;
                     player.y = portal.y + portal.height / 2 - player.height / 2;
                 }
