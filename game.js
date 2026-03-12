@@ -693,8 +693,13 @@ function update() {
 }
 
 function draw() {
+    // Draw sky background
     ctx.fillStyle = '#87CEEB';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw buildings in background
+    drawBuildings();
+    
     drawCoin();
     drawSuitcase();
     drawFrenzyCoins();
@@ -709,6 +714,38 @@ function draw() {
         ctx.font = 'bold 20px Arial';
         ctx.fillText(`COIN FRENZY: ${Math.ceil(coinFrenzy.timeLeft)}s`, 20, 35);
     }
+}
+
+function drawBuildings() {
+    // Draw multiple buildings in the background
+    const buildings = [
+        { x: 50, y: 200, width: 80, height: 400, color: '#696969' },
+        { x: 150, y: 250, width: 100, height: 350, color: '#808080' },
+        { x: 270, y: 150, width: 90, height: 450, color: '#696969' },
+        { x: 380, y: 220, width: 110, height: 380, color: '#778899' },
+        { x: 510, y: 180, width: 85, height: 420, color: '#696969' },
+        { x: 615, y: 240, width: 95, height: 360, color: '#808080' },
+        { x: 730, y: 190, width: 70, height: 410, color: '#778899' }
+    ];
+    
+    buildings.forEach(building => {
+        // Draw building
+        ctx.fillStyle = building.color;
+        ctx.fillRect(building.x, building.y, building.width, building.height);
+        
+        // Draw windows
+        ctx.fillStyle = '#FFD700';
+        const windowRows = Math.floor(building.height / 40);
+        const windowCols = Math.floor(building.width / 25);
+        
+        for (let row = 0; row < windowRows; row++) {
+            for (let col = 0; col < windowCols; col++) {
+                const windowX = building.x + 10 + (col * 25);
+                const windowY = building.y + 20 + (row * 40);
+                ctx.fillRect(windowX, windowY, 10, 15);
+            }
+        }
+    });
 }
 
 function gameLoop() {
