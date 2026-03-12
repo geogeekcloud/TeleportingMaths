@@ -29,10 +29,11 @@ let coinFrenzy = { active: false, timeLeft: 0, spawnTimer: 0 };
 let frenzyCoins = [];
 let keys = {};
 let canEnterPortal = true;
-let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false };
-let equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false };
+let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false };
+let equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false };
 let spiralStartTime = 0; // Track when spiral started
-let clones = []; // Array to store clone positions
+let snakeTrail = []; // Array to store snake trail positions
+let cloneSquare = []; // Array to store clone positions in square formation
 
 function ensureNoOverlap() {
     const portalCenterX = portal.x + portal.width / 2;
@@ -110,8 +111,8 @@ function loadProgress() {
         const data = JSON.parse(saved);
         score = data.score || 0;
         coins = data.coins !== undefined ? data.coins : 5;
-        inventory = data.inventory || { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false };
-        equipped = data.equipped || { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false };
+        inventory = data.inventory || { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false };
+        equipped = data.equipped || { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false };
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
     } else {
@@ -120,10 +121,17 @@ function loadProgress() {
 }
 
 function drawPlayer() {
-    // Draw all clones first if cloner is equipped
+    // Draw snake trail first if snake is equipped
+    if (equipped.snake && inventory.snake) {
+        snakeTrail.forEach(segment => {
+            drawSinglePlayer(segment.x, segment.y, 0.5); // Draw snake at half opacity
+        });
+    }
+    
+    // Draw clones in square formation if cloner is equipped
     if (equipped.cloner && inventory.cloner) {
-        clones.forEach(clone => {
-            drawSinglePlayer(clone.x, clone.y, 0.5); // Draw clones at half opacity
+        cloneSquare.forEach(clone => {
+            drawSinglePlayer(clone.x, clone.y, 0.6); // Draw clones slightly transparent
         });
     }
     
@@ -363,6 +371,7 @@ function spawnFrenzyCoin() {
 }
 
 function checkCoinCollision() {
+    // Check main player collision
     if (!coin.collected) {
         const dx = player.x + player.width / 2 - coin.x;
         const dy = player.y + player.height / 2 - coin.y;
@@ -374,6 +383,22 @@ function checkCoinCollision() {
             coinsValue.textContent = coins;
             saveProgress();
         }
+    }
+    
+    // Check clone collision with coins if cloner is equipped
+    if (equipped.cloner && inventory.cloner && !coin.collected) {
+        cloneSquare.forEach(clone => {
+            const dx = clone.x + player.width / 2 - coin.x;
+            const dy = clone.y + player.height / 2 - coin.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < coin.radius + 15) {
+                coin.collected = true;
+                coins++;
+                coinsValue.textContent = coins;
+                saveProgress();
+            }
+        });
     }
     
     if (!suitcase.collected) {
@@ -390,6 +415,7 @@ function checkCoinCollision() {
         }
     }
     
+    // Check frenzy coins with main player
     frenzyCoins.forEach(fCoin => {
         if (!fCoin.collected) {
             const dx = player.x + player.width / 2 - fCoin.x;
@@ -404,6 +430,26 @@ function checkCoinCollision() {
             }
         }
     });
+    
+    // Check frenzy coins with clones if cloner is equipped
+    if (equipped.cloner && inventory.cloner) {
+        frenzyCoins.forEach(fCoin => {
+            if (!fCoin.collected) {
+                cloneSquare.forEach(clone => {
+                    const dx = clone.x + player.width / 2 - fCoin.x;
+                    const dy = clone.y + player.height / 2 - fCoin.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 20) {
+                        fCoin.collected = true;
+                        coins++;
+                        coinsValue.textContent = coins;
+                        saveProgress();
+                    }
+                });
+            }
+        });
+    }
 }
 
 function checkCollision() {
@@ -593,13 +639,32 @@ function update() {
         }
     }
     
-    // Update clones to follow player with delay
+    // Update snake trail to follow player with delay
+    if (equipped.snake && inventory.snake) {
+        // Add current position to front of snake trail
+        snakeTrail.unshift({ x: oldX, y: oldY });
+        // Keep only 100 segments
+        if (snakeTrail.length > 100) {
+            snakeTrail.pop();
+        }
+    }
+    
+    // Update clone square positions to move with player
     if (equipped.cloner && inventory.cloner) {
-        // Add current position to front of clones array
-        clones.unshift({ x: oldX, y: oldY });
-        // Keep only 100 clones
-        if (clones.length > 100) {
-            clones.pop();
+        // Create 100 clones in a 10x10 square formation around player
+        cloneSquare = [];
+        const spacing = 40; // Space between clones
+        const gridSize = 10; // 10x10 = 100 clones
+        const offsetX = -(gridSize * spacing) / 2; // Center the square
+        const offsetY = -(gridSize * spacing) / 2;
+        
+        for (let row = 0; row < gridSize; row++) {
+            for (let col = 0; col < gridSize; col++) {
+                cloneSquare.push({
+                    x: player.x + offsetX + (col * spacing),
+                    y: player.y + offsetY + (row * spacing)
+                });
+            }
         }
     }
     
@@ -665,6 +730,7 @@ function updateInventoryDisplay() {
         face: 'Face',
         flyingChair: 'Flying Chair',
         spiral: 'Spiral',
+        snake: 'Snake',
         cloner: 'Cloner'
     };
     
@@ -674,8 +740,8 @@ function updateInventoryDisplay() {
             div.className = 'inventory-item';
             div.innerHTML = `
                 <span>${itemNames[item]}</span>
-                <button class="equip-btn ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner)) ? 'equipped' : ''}" data-item="${item}">
-                    ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner)) ? 'Equipped' : 'Equip'}
+                <button class="equip-btn ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner) || (item === 'snake' && equipped.snake)) ? 'equipped' : ''}" data-item="${item}">
+                    ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner) || (item === 'snake' && equipped.snake)) ? 'Equipped' : 'Equip'}
                 </button>
             `;
             inventoryList.appendChild(div);
@@ -711,7 +777,12 @@ function updateInventoryDisplay() {
             } else if (item === 'cloner') {
                 equipped.cloner = !equipped.cloner;
                 if (!equipped.cloner) {
-                    clones = []; // Clear clones when unequipped
+                    cloneSquare = []; // Clear clones when unequipped
+                }
+            } else if (item === 'snake') {
+                equipped.snake = !equipped.snake;
+                if (!equipped.snake) {
+                    snakeTrail = []; // Clear snake trail when unequipped
                 }
             }
             
@@ -782,8 +853,8 @@ superResetBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to reset everything? This will delete all your coins, items, and score!')) {
         score = 0;
         coins = 5;
-        inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false };
-        equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false };
+        inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false };
+        equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false };
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
         localStorage.removeItem('portalMathGame');
