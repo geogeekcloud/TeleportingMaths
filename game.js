@@ -29,9 +29,10 @@ let coinFrenzy = { active: false, timeLeft: 0, spawnTimer: 0 };
 let frenzyCoins = [];
 let keys = {};
 let canEnterPortal = true;
-let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false };
-let equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false };
+let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false };
+let equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false };
 let spiralStartTime = 0; // Track when spiral started
+let clones = []; // Array to store clone positions
 
 function ensureNoOverlap() {
     const portalCenterX = portal.x + portal.width / 2;
@@ -109,8 +110,8 @@ function loadProgress() {
         const data = JSON.parse(saved);
         score = data.score || 0;
         coins = data.coins !== undefined ? data.coins : 5;
-        inventory = data.inventory || { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false };
-        equipped = data.equipped || { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false };
+        inventory = data.inventory || { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false };
+        equipped = data.equipped || { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false };
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
     } else {
@@ -119,29 +120,43 @@ function loadProgress() {
 }
 
 function drawPlayer() {
+    // Draw all clones first if cloner is equipped
+    if (equipped.cloner && inventory.cloner) {
+        clones.forEach(clone => {
+            drawSinglePlayer(clone.x, clone.y, 0.5); // Draw clones at half opacity
+        });
+    }
+    
+    // Draw main player
+    drawSinglePlayer(player.x, player.y, 1.0);
+}
+
+function drawSinglePlayer(x, y, opacity) {
+    ctx.globalAlpha = opacity;
+    
     // Draw cape first (behind character)
     if (equipped.cape && inventory.cape) {
         ctx.fillStyle = '#DC143C';
         ctx.beginPath();
         
         if (player.direction === 'left') {
-            ctx.moveTo(player.x + player.width, player.y + 5);
-            ctx.lineTo(player.x + player.width + 15, player.y + 15);
-            ctx.lineTo(player.x + player.width + 10, player.y + 35);
-            ctx.lineTo(player.x + player.width, player.y + 30);
+            ctx.moveTo(x + player.width, y + 5);
+            ctx.lineTo(x + player.width + 15, y + 15);
+            ctx.lineTo(x + player.width + 10, y + 35);
+            ctx.lineTo(x + player.width, y + 30);
         } else if (player.direction === 'right') {
-            ctx.moveTo(player.x, player.y + 5);
-            ctx.lineTo(player.x - 15, player.y + 15);
-            ctx.lineTo(player.x - 10, player.y + 35);
-            ctx.lineTo(player.x, player.y + 30);
+            ctx.moveTo(x, y + 5);
+            ctx.lineTo(x - 15, y + 15);
+            ctx.lineTo(x - 10, y + 35);
+            ctx.lineTo(x, y + 30);
         } else if (player.direction === 'up') {
-            ctx.moveTo(player.x + 15, player.y + player.height);
-            ctx.lineTo(player.x + 5, player.y + player.height + 15);
-            ctx.lineTo(player.x + 25, player.y + player.height + 15);
+            ctx.moveTo(x + 15, y + player.height);
+            ctx.lineTo(x + 5, y + player.height + 15);
+            ctx.lineTo(x + 25, y + player.height + 15);
         } else if (player.direction === 'down') {
-            ctx.moveTo(player.x + 15, player.y);
-            ctx.lineTo(player.x + 5, player.y - 15);
-            ctx.lineTo(player.x + 25, player.y - 15);
+            ctx.moveTo(x + 15, y);
+            ctx.lineTo(x + 5, y - 15);
+            ctx.lineTo(x + 25, y - 15);
         }
         
         ctx.closePath();
@@ -152,46 +167,46 @@ function drawPlayer() {
     if (equipped.chair && inventory.flyingChair) {
         // Chair backrest
         ctx.fillStyle = '#8B4513';
-        ctx.fillRect(player.x - 5, player.y + 15, 5, 25);
+        ctx.fillRect(x - 5, y + 15, 5, 25);
         
         // Chair seat
-        ctx.fillRect(player.x - 5, player.y + 40, 25, 5);
+        ctx.fillRect(x - 5, y + 40, 25, 5);
         
         // Person's body sitting (side view)
         ctx.fillStyle = '#FFD7B5';
-        ctx.fillRect(player.x, player.y + 25, 20, 15); // Torso
+        ctx.fillRect(x, y + 25, 20, 15); // Torso
         
         // Person's legs bent sitting position
-        ctx.fillRect(player.x + 15, player.y + 35, 8, 15); // Upper leg
-        ctx.fillRect(player.x + 15, player.y + 50, 15, 8); // Lower leg stretched forward
+        ctx.fillRect(x + 15, y + 35, 8, 15); // Upper leg
+        ctx.fillRect(x + 15, y + 50, 15, 8); // Lower leg stretched forward
         
         // Foot
         ctx.fillStyle = '#654321';
-        ctx.fillRect(player.x + 28, player.y + 50, 8, 10);
+        ctx.fillRect(x + 28, y + 50, 8, 10);
         
         // Head
         ctx.fillStyle = '#FFE4C4';
         ctx.beginPath();
-        ctx.arc(player.x + 10, player.y + 18, 12, 0, Math.PI * 2);
+        ctx.arc(x + 10, y + 18, 12, 0, Math.PI * 2);
         ctx.fill();
         
         // Face
         if (equipped.face && inventory.face) {
             ctx.fillStyle = '#000';
             ctx.beginPath();
-            ctx.arc(player.x + 7, player.y + 16, 2, 0, Math.PI * 2);
+            ctx.arc(x + 7, y + 16, 2, 0, Math.PI * 2);
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(player.x + 13, player.y + 16, 2, 0, Math.PI * 2);
+            ctx.arc(x + 13, y + 16, 2, 0, Math.PI * 2);
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(player.x + 10, player.y + 20, 4, 0, Math.PI);
+            ctx.arc(x + 10, y + 20, 4, 0, Math.PI);
             ctx.stroke();
         }
         
         // Hat on head
         ctx.fillStyle = '#FFD700';
-        ctx.fillRect(player.x + 3, player.y + 8, 14, 6);
+        ctx.fillRect(x + 3, y + 8, 14, 6);
         
         let capColor = '#1E90FF';
         if (equipped.hat === 'yellowHat') capColor = '#FFD700';
@@ -199,55 +214,55 @@ function drawPlayer() {
         else if (equipped.hat === 'greenCap') capColor = '#00FF00';
         
         ctx.fillStyle = capColor;
-        ctx.fillRect(player.x + 2, player.y + 4, 16, 4);
+        ctx.fillRect(x + 2, y + 4, 16, 4);
         
         // Left jetpack (behind chair)
         ctx.fillStyle = '#C0C0C0';
-        ctx.fillRect(player.x - 15, player.y + 30, 8, 15);
+        ctx.fillRect(x - 15, y + 30, 8, 15);
         ctx.fillStyle = '#FF4500';
         ctx.beginPath();
-        ctx.moveTo(player.x - 13, player.y + 45);
-        ctx.lineTo(player.x - 15, player.y + 52);
-        ctx.lineTo(player.x - 11, player.y + 52);
-        ctx.lineTo(player.x - 9, player.y + 48);
+        ctx.moveTo(x - 13, y + 45);
+        ctx.lineTo(x - 15, y + 52);
+        ctx.lineTo(x - 11, y + 52);
+        ctx.lineTo(x - 9, y + 48);
         ctx.closePath();
         ctx.fill();
         
         // Right jetpack (in front of chair)
         ctx.fillStyle = '#C0C0C0';
-        ctx.fillRect(player.x + 22, player.y + 30, 8, 15);
+        ctx.fillRect(x + 22, y + 30, 8, 15);
         ctx.fillStyle = '#FF4500';
         ctx.beginPath();
-        ctx.moveTo(player.x + 26, player.y + 45);
-        ctx.lineTo(player.x + 24, player.y + 52);
-        ctx.lineTo(player.x + 28, player.y + 52);
-        ctx.lineTo(player.x + 30, player.y + 48);
+        ctx.moveTo(x + 26, y + 45);
+        ctx.lineTo(x + 24, y + 52);
+        ctx.lineTo(x + 28, y + 52);
+        ctx.lineTo(x + 30, y + 48);
         ctx.closePath();
         ctx.fill();
     } else {
         // Draw standing character (when not in chair)
         ctx.fillStyle = '#FFD7B5';
-        ctx.fillRect(player.x, player.y, player.width, player.height);
+        ctx.fillRect(x, y, player.width, player.height);
         ctx.fillStyle = '#FFE4C4';
         ctx.beginPath();
-        ctx.arc(player.x + 15, player.y - 10, 15, 0, Math.PI * 2);
+        ctx.arc(x + 15, y - 10, 15, 0, Math.PI * 2);
         ctx.fill();
         
         if (equipped.face && inventory.face) {
             ctx.fillStyle = '#000';
             ctx.beginPath();
-            ctx.arc(player.x + 10, player.y - 12, 2, 0, Math.PI * 2);
+            ctx.arc(x + 10, y - 12, 2, 0, Math.PI * 2);
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(player.x + 20, player.y - 12, 2, 0, Math.PI * 2);
+            ctx.arc(x + 20, y - 12, 2, 0, Math.PI * 2);
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(player.x + 15, player.y - 7, 5, 0, Math.PI);
+            ctx.arc(x + 15, y - 7, 5, 0, Math.PI);
             ctx.stroke();
         }
         
         ctx.fillStyle = '#FFD700';
-        ctx.fillRect(player.x + 5, player.y - 20, 20, 8);
+        ctx.fillRect(x + 5, y - 20, 20, 8);
         
         let capColor = '#1E90FF';
         if (equipped.hat === 'yellowHat') capColor = '#FFD700';
@@ -255,8 +270,10 @@ function drawPlayer() {
         else if (equipped.hat === 'greenCap') capColor = '#00FF00';
         
         ctx.fillStyle = capColor;
-        ctx.fillRect(player.x + 3, player.y - 25, 24, 5);
+        ctx.fillRect(x + 3, y - 25, 24, 5);
     }
+    
+    ctx.globalAlpha = 1.0; // Reset opacity
 }
 
 function drawPortal() {
@@ -519,6 +536,10 @@ function checkAnswer() {
 }
 
 function update() {
+    // Store old position for clones
+    const oldX = player.x;
+    const oldY = player.y;
+    
     // Set speed based on flying chair
     const currentSpeed = (equipped.chair === true && inventory.flyingChair === true) ? 18 : 2;
     
@@ -569,6 +590,16 @@ function update() {
         if (keys['s'] || keys['S']) {
             if (player.y < canvas.height - player.height) player.y += currentSpeed;
             player.direction = 'down';
+        }
+    }
+    
+    // Update clones to follow player with delay
+    if (equipped.cloner && inventory.cloner) {
+        // Add current position to front of clones array
+        clones.unshift({ x: oldX, y: oldY });
+        // Keep only 100 clones
+        if (clones.length > 100) {
+            clones.pop();
         }
     }
     
@@ -633,7 +664,8 @@ function updateInventoryDisplay() {
         cape: 'Cape',
         face: 'Face',
         flyingChair: 'Flying Chair',
-        spiral: 'Spiral'
+        spiral: 'Spiral',
+        cloner: 'Cloner'
     };
     
     for (let item in inventory) {
@@ -642,8 +674,8 @@ function updateInventoryDisplay() {
             div.className = 'inventory-item';
             div.innerHTML = `
                 <span>${itemNames[item]}</span>
-                <button class="equip-btn ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral)) ? 'equipped' : ''}" data-item="${item}">
-                    ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral)) ? 'Equipped' : 'Equip'}
+                <button class="equip-btn ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner)) ? 'equipped' : ''}" data-item="${item}">
+                    ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner)) ? 'Equipped' : 'Equip'}
                 </button>
             `;
             inventoryList.appendChild(div);
@@ -675,6 +707,11 @@ function updateInventoryDisplay() {
                     // When unequipping spiral, teleport back to portal
                     player.x = portal.x + portal.width / 2 - player.width / 2;
                     player.y = portal.y + portal.height / 2 - player.height / 2;
+                }
+            } else if (item === 'cloner') {
+                equipped.cloner = !equipped.cloner;
+                if (!equipped.cloner) {
+                    clones = []; // Clear clones when unequipped
                 }
             }
             
@@ -745,8 +782,8 @@ superResetBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to reset everything? This will delete all your coins, items, and score!')) {
         score = 0;
         coins = 5;
-        inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false };
-        equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false };
+        inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false };
+        equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false };
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
         localStorage.removeItem('portalMathGame');
