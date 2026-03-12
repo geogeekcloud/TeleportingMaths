@@ -514,6 +514,15 @@ function showQuestionRoom() {
     answerInput.value = '';
     feedbackEl.textContent = '';
     
+    // Show animation based on equipped items
+    if (equipped.chair && inventory.flyingChair) {
+        feedbackEl.textContent = '🪑 Doing loop-de-loops!';
+        feedbackEl.style.color = '#FFD700';
+    } else if (equipped.snake && inventory.snake) {
+        feedbackEl.textContent = '🐍 Running from the snake!';
+        feedbackEl.style.color = '#90EE90';
+    }
+    
     // Force focus with multiple attempts
     requestAnimationFrame(() => {
         answerInput.focus();
