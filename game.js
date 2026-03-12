@@ -380,7 +380,8 @@ function checkCoinCollision() {
         
         if (distance < coin.radius + 15) {
             coin.collected = true;
-            coins++;
+            const coinValue = (equipped.petPortal && inventory.petPortal) ? 5 : 1;
+            coins += coinValue;
             coinsValue.textContent = coins;
             saveProgress();
         }
@@ -395,7 +396,8 @@ function checkCoinCollision() {
             
             if (distance < coin.radius + 15) {
                 coin.collected = true;
-                coins++;
+                const coinValue = (equipped.petPortal && inventory.petPortal) ? 5 : 1;
+                coins += coinValue;
                 coinsValue.textContent = coins;
                 saveProgress();
             }
@@ -425,7 +427,8 @@ function checkCoinCollision() {
             
             if (distance < 20) {
                 fCoin.collected = true;
-                coins++;
+                const coinValue = (equipped.petPortal && inventory.petPortal) ? 5 : 1;
+                coins += coinValue;
                 coinsValue.textContent = coins;
                 saveProgress();
             }
@@ -443,7 +446,8 @@ function checkCoinCollision() {
                     
                     if (distance < 20) {
                         fCoin.collected = true;
-                        coins++;
+                        const coinValue = (equipped.petPortal && inventory.petPortal) ? 5 : 1;
+                        coins += coinValue;
                         coinsValue.textContent = coins;
                         saveProgress();
                     }
@@ -545,7 +549,8 @@ function checkAnswer() {
     
     if (userAnswer === currentAnswer) {
         score++;
-        coins++;
+        const coinValue = (equipped.petPortal && inventory.petPortal) ? 5 : 1;
+        coins += coinValue;
         
         // Give 100 bonus coins on round 10!
         if (score === 10) {
