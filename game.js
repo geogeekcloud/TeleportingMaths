@@ -651,18 +651,17 @@ function update() {
     
     // Update clone square positions to move with player
     if (equipped.cloner && inventory.cloner) {
-        // Create 100 clones in a 10x10 square formation around player
+        // Create 500 clones to fill the entire screen!
         cloneSquare = [];
-        const spacing = 40; // Space between clones
-        const gridSize = 10; // 10x10 = 100 clones
-        const offsetX = -(gridSize * spacing) / 2; // Center the square
-        const offsetY = -(gridSize * spacing) / 2;
+        const spacing = 35; // Space between clones
+        const cols = Math.floor(canvas.width / spacing); // How many fit across
+        const rows = Math.floor(canvas.height / spacing); // How many fit down
         
-        for (let row = 0; row < gridSize; row++) {
-            for (let col = 0; col < gridSize; col++) {
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
                 cloneSquare.push({
-                    x: player.x + offsetX + (col * spacing),
-                    y: player.y + offsetY + (row * spacing)
+                    x: col * spacing,
+                    y: row * spacing
                 });
             }
         }
