@@ -514,13 +514,10 @@ function showQuestionRoom() {
     answerInput.value = '';
     feedbackEl.textContent = '';
     
-    // Show animation based on equipped items
-    if (equipped.chair && inventory.flyingChair) {
-        feedbackEl.textContent = '🪑 Doing loop-de-loops!';
-        feedbackEl.style.color = '#FFD700';
-    } else if (equipped.snake && inventory.snake) {
-        feedbackEl.textContent = '🐍 Running from the snake!';
-        feedbackEl.style.color = '#90EE90';
+    // Start animation loop for question room
+    if (!questionRoom.dataset.animating) {
+        questionRoom.dataset.animating = 'true';
+        animateQuestionRoom();
     }
     
     // Force focus with multiple attempts
@@ -531,6 +528,179 @@ function showQuestionRoom() {
             answerInput.click();
         });
     });
+}
+
+function animateQuestionRoom() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 800;
+    canvas.height = 600;
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.zIndex = '1';
+    canvas.id = 'question-animation';
+    
+    // Remove old canvas if exists
+    const oldCanvas = document.getElementById('question-animation');
+    if (oldCanvas) oldCanvas.remove();
+    
+    questionRoom.insertBefore(canvas, questionRoom.firstChild);
+    const ctx = canvas.getContext('2d');
+    
+    let animationFrame = 0;
+    
+    function animate() {
+        if (questionRoom.classList.contains('hidden')) {
+            canvas.remove();
+            questionRoom.dataset.animating = '';
+            return;
+        }
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        animationFrame++;
+        
+        // Flying chair animation - loop-de-loops
+        if (equipped.chair && inventory.flyingChair) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2 - 100;
+            const radius = 80;
+            const angle = (animationFrame / 30) * Math.PI * 2;
+            
+            const x = centerX + Math.cos(angle) * radius;
+            const y = centerY + Math.sin(angle) * radius;
+            
+            // Draw loop-de-loop trail
+            ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Draw mini player in chair
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(x - 3, y, 3, 8);
+            ctx.fillRect(x - 3, y + 8, 8, 3);
+            ctx.fillStyle = '#FFD7B5';
+            ctx.fillRect(x, y + 3, 5, 5);
+            ctx.fillStyle = '#FFE4C4';
+            ctx.beginPath();
+            ctx.arc(x + 2, y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // Snake animation - running away
+        if (equipped.snake && inventory.snake) {
+            const playerX = 200 + Math.sin(animationFrame / 20) * 150;
+            const playerY = canvas.height / 2;
+            
+            // Draw player running
+            ctx.fillStyle = '#FFD7B5';
+            ctx.fillRect(playerX, playerY, 15, 25);
+            ctx.fillStyle = '#FFE4C4';
+            ctx.beginPath();
+            ctx.arc(playerX + 7, playerY - 5, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw snake chasing
+            for (let i = 0; i < 10; i++) {
+                const snakeX = playerX - 30 - (i * 15) + Math.sin((animationFrame + i * 5) / 10) * 10;
+                const snakeY = playerY + 10;
+                ctx.fillStyle = `rgba(0, 255, 0, ${1 - i * 0.08})`;
+                ctx.beginPath();
+                ctx.arc(snakeX, snakeY, 8 - i * 0.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Snake head
+            const headX = playerX - 30 + Math.sin(animationFrame / 10) * 10;
+            ctx.fillStyle = '#00FF00';
+            ctx.beginPath();
+            ctx.arc(headX, playerY + 10, 10, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(headX - 3, playerY + 8, 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(headX + 3, playerY + 8, 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // Spiral animation
+        if (equipped.spiral && inventory.spiral) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const maxRadius = 150;
+            const currentRadius = ((animationFrame % 150) / 150) * maxRadius;
+            const angle = (animationFrame / 10) * Math.PI * 2;
+            
+            // Draw spiral trail
+            ctx.strokeStyle = 'rgba(30, 144, 255, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < 100; i++) {
+                const r = (i / 100) * currentRadius;
+                const a = (i / 100) * angle;
+                const x = centerX + Math.cos(a) * r;
+                const y = centerY + Math.sin(a) * r;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            
+            // Draw player at end of spiral
+            const x = centerX + Math.cos(angle) * currentRadius;
+            const y = centerY + Math.sin(angle) * currentRadius;
+            ctx.fillStyle = '#FFD7B5';
+            ctx.fillRect(x - 7, y - 12, 15, 25);
+            ctx.fillStyle = '#FFE4C4';
+            ctx.beginPath();
+            ctx.arc(x, y - 17, 8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // Pet portal animation
+        if (equipped.petPortal && inventory.petPortal) {
+            const x = canvas.width - 100;
+            const y = 100 + Math.sin(animationFrame / 20) * 20;
+            
+            ctx.fillStyle = '#1E90FF';
+            ctx.beginPath();
+            ctx.arc(x, y, 25, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#4169E1';
+            ctx.beginPath();
+            ctx.arc(x, y, 15, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eyes
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(x - 8, y - 5, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(x + 8, y - 5, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Smile
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y + 5, 8, 0, Math.PI);
+            ctx.stroke();
+            
+            // Sparkles
+            ctx.fillStyle = '#FFD700';
+            ctx.font = '20px Arial';
+            ctx.fillText('✨', x + 20, y - 20);
+            ctx.fillText('💰', x - 30, y + 10);
+        }
+        
+        requestAnimationFrame(animate);
+    }
+    
+    animate();
 }
 
 function showPortalRoom() {

@@ -143,6 +143,11 @@ body {
     z-index: 50;
 }
 
+#question-room > * {
+    position: relative;
+    z-index: 10;
+}
+
 #question {
     font-size: 48px;
     font-weight: bold;
