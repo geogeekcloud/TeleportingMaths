@@ -29,8 +29,8 @@ let coinFrenzy = { active: false, timeLeft: 0, spawnTimer: 0 };
 let frenzyCoins = [];
 let keys = {};
 let canEnterPortal = true;
-let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false, petPortal: false };
-let equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false, petPortal: false };
+let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false, petPortal: false, skibidiMode: false };
+let equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false, petPortal: false, skibidiMode: false };
 let spiralStartTime = 0; // Track when spiral started
 let snakeTrail = []; // Array to store snake trail positions
 let cloneSquare = []; // Array to store clone positions in square formation
@@ -112,8 +112,8 @@ function loadProgress() {
         const data = JSON.parse(saved);
         score = data.score || 0;
         coins = data.coins !== undefined ? data.coins : 5;
-        inventory = data.inventory || { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false, petPortal: false };
-        equipped = data.equipped || { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false, petPortal: false };
+        inventory = data.inventory || { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false, petPortal: false, skibidiMode: false };
+        equipped = data.equipped || { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false, petPortal: false, skibidiMode: false };
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
     } else {
@@ -904,6 +904,65 @@ function draw() {
     drawFrenzyCoins();
     drawPortal();
     
+    // Draw Skibidi Toilet if equipped
+    if (equipped.skibidiMode && inventory.skibidiMode) {
+        const toiletX = 50;
+        const toiletY = canvas.height - 150;
+        
+        // Toilet bowl
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(toiletX, toiletY + 40, 60, 50);
+        ctx.fillStyle = '#E0E0E0';
+        ctx.fillRect(toiletX + 5, toiletY + 45, 50, 40);
+        
+        // Toilet tank
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(toiletX + 10, toiletY, 40, 45);
+        
+        // Toilet lid (open)
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.ellipse(toiletX + 30, toiletY + 50, 25, 10, -0.5, 0, Math.PI);
+        ctx.fill();
+        
+        // Face on toilet
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.arc(toiletX + 20, toiletY + 20, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(toiletX + 40, toiletY + 20, 3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Evil smile
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(toiletX + 30, toiletY + 30, 8, Math.PI, 0);
+        ctx.stroke();
+        
+        // LASER EYES!
+        const laserTime = Date.now() / 100;
+        ctx.strokeStyle = '#FF0000';
+        ctx.lineWidth = 3;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#FF0000';
+        
+        // Left laser
+        ctx.beginPath();
+        ctx.moveTo(toiletX + 20, toiletY + 20);
+        ctx.lineTo(toiletX + 20 + Math.cos(laserTime) * 200, toiletY + 20 + Math.sin(laserTime) * 50);
+        ctx.stroke();
+        
+        // Right laser
+        ctx.beginPath();
+        ctx.moveTo(toiletX + 40, toiletY + 20);
+        ctx.lineTo(toiletX + 40 + Math.cos(laserTime + 0.5) * 200, toiletY + 20 + Math.sin(laserTime + 0.5) * 50);
+        ctx.stroke();
+        
+        ctx.shadowBlur = 0;
+    }
+    
     // Draw pet portal
     if (equipped.petPortal && inventory.petPortal) {
         // Draw mini portal body
@@ -1008,6 +1067,7 @@ function updateInventoryDisplay() {
         spiral: 'Spiral',
         snake: 'Snake',
         petPortal: 'Pet Portal',
+        skibidiMode: 'Skibidi Toilet',
         cloner: 'Cloner'
     };
     
@@ -1017,8 +1077,8 @@ function updateInventoryDisplay() {
             div.className = 'inventory-item';
             div.innerHTML = `
                 <span>${itemNames[item]}</span>
-                <button class="equip-btn ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner) || (item === 'snake' && equipped.snake) || (item === 'petPortal' && equipped.petPortal)) ? 'equipped' : ''}" data-item="${item}">
-                    ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner) || (item === 'snake' && equipped.snake) || (item === 'petPortal' && equipped.petPortal)) ? 'Equipped' : 'Equip'}
+                <button class="equip-btn ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner) || (item === 'snake' && equipped.snake) || (item === 'petPortal' && equipped.petPortal) || (item === 'skibidiMode' && equipped.skibidiMode)) ? 'equipped' : ''}" data-item="${item}">
+                    ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner) || (item === 'snake' && equipped.snake) || (item === 'petPortal' && equipped.petPortal) || (item === 'skibidiMode' && equipped.skibidiMode)) ? 'Equipped' : 'Equip'}
                 </button>
             `;
             inventoryList.appendChild(div);
@@ -1067,6 +1127,8 @@ function updateInventoryDisplay() {
                     petPosition.x = player.x - 30;
                     petPosition.y = player.y - 40;
                 }
+            } else if (item === 'skibidiMode') {
+                equipped.skibidiMode = !equipped.skibidiMode;
             }
             
             saveProgress();
@@ -1136,8 +1198,8 @@ superResetBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to reset everything? This will delete all your coins, items, and score!')) {
         score = 0;
         coins = 5;
-        inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false, petPortal: false };
-        equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false, petPortal: false };
+        inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false, petPortal: false, skibidiMode: false };
+        equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false, petPortal: false, skibidiMode: false };
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
         localStorage.removeItem('portalMathGame');
