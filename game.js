@@ -948,17 +948,42 @@ function draw() {
         ctx.shadowBlur = 10;
         ctx.shadowColor = '#FF0000';
         
-        // Left laser
-        ctx.beginPath();
-        ctx.moveTo(toiletX + 20, toiletY + 20);
-        ctx.lineTo(toiletX + 20 + Math.cos(laserTime) * 200, toiletY + 20 + Math.sin(laserTime) * 50);
-        ctx.stroke();
-        
-        // Right laser
-        ctx.beginPath();
-        ctx.moveTo(toiletX + 40, toiletY + 20);
-        ctx.lineTo(toiletX + 40 + Math.cos(laserTime + 0.5) * 200, toiletY + 20 + Math.sin(laserTime + 0.5) * 50);
-        ctx.stroke();
+        // If snake is equipped, shoot at the snake trail, otherwise shoot randomly
+        if (equipped.snake && inventory.snake && snakeTrail.length > 0) {
+            // Target the snake segments
+            const targetSegment = snakeTrail[Math.floor(snakeTrail.length / 2)] || snakeTrail[0];
+            
+            // Left laser shooting at snake
+            ctx.beginPath();
+            ctx.moveTo(toiletX + 20, toiletY + 20);
+            ctx.lineTo(targetSegment.x + 15, targetSegment.y + 25);
+            ctx.stroke();
+            
+            // Right laser shooting at snake
+            ctx.beginPath();
+            ctx.moveTo(toiletX + 40, toiletY + 20);
+            ctx.lineTo(targetSegment.x + 15, targetSegment.y + 25);
+            ctx.stroke();
+            
+            // Draw explosion effect on snake
+            ctx.fillStyle = 'rgba(255, 100, 0, 0.6)';
+            ctx.beginPath();
+            ctx.arc(targetSegment.x + 15, targetSegment.y + 25, 10 + Math.sin(laserTime) * 5, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            // Shoot randomly if no snake
+            // Left laser
+            ctx.beginPath();
+            ctx.moveTo(toiletX + 20, toiletY + 20);
+            ctx.lineTo(toiletX + 20 + Math.cos(laserTime) * 200, toiletY + 20 + Math.sin(laserTime) * 50);
+            ctx.stroke();
+            
+            // Right laser
+            ctx.beginPath();
+            ctx.moveTo(toiletX + 40, toiletY + 20);
+            ctx.lineTo(toiletX + 40 + Math.cos(laserTime + 0.5) * 200, toiletY + 20 + Math.sin(laserTime + 0.5) * 50);
+            ctx.stroke();
+        }
         
         ctx.shadowBlur = 0;
     }
