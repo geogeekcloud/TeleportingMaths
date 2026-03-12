@@ -29,8 +29,8 @@ let coinFrenzy = { active: false, timeLeft: 0, spawnTimer: 0 };
 let frenzyCoins = [];
 let keys = {};
 let canEnterPortal = true;
-let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true };
-let equipped = { hat: 'blueHat', cape: false, face: false, chair: false };
+let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false };
+let equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false };
 
 function ensureNoOverlap() {
     const portalCenterX = portal.x + portal.width / 2;
@@ -108,8 +108,8 @@ function loadProgress() {
         const data = JSON.parse(saved);
         score = data.score || 0;
         coins = data.coins !== undefined ? data.coins : 5;
-        inventory = data.inventory || { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true };
-        equipped = data.equipped || { hat: 'blueHat', cape: false, face: false, chair: false };
+        inventory = data.inventory || { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false };
+        equipped = data.equipped || { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false };
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
     } else {
@@ -481,6 +481,12 @@ function checkAnswer() {
     if (userAnswer === currentAnswer) {
         score++;
         coins++;
+        
+        // Give 100 bonus coins on round 10!
+        if (score === 10) {
+            coins += 100;
+        }
+        
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
         feedbackEl.textContent = '✓ Correct!';
@@ -513,21 +519,46 @@ function update() {
     // Set speed based on flying chair
     const currentSpeed = (equipped.chair === true && inventory.flyingChair === true) ? 18 : 2;
     
-    if (keys['a'] || keys['A']) {
-        if (player.x > 0) player.x -= currentSpeed;
-        player.direction = 'left';
-    }
-    if (keys['d'] || keys['D']) {
-        if (player.x < canvas.width - player.width) player.x += currentSpeed;
-        player.direction = 'right';
-    }
-    if (keys['w'] || keys['W']) {
-        if (player.y > 0) player.y -= currentSpeed;
-        player.direction = 'up';
-    }
-    if (keys['s'] || keys['S']) {
-        if (player.y < canvas.height - player.height) player.y += currentSpeed;
-        player.direction = 'down';
+    // Handle spiral movement
+    if (equipped.spiral && inventory.spiral) {
+        // Spin in circles automatically
+        const spinSpeed = 3;
+        const radius = 50;
+        const time = Date.now() / 200; // Controls spin speed
+        
+        const centerX = player.x + Math.cos(time) * radius;
+        const centerY = player.y + Math.sin(time) * radius;
+        
+        player.x += Math.cos(time) * spinSpeed;
+        player.y += Math.sin(time) * spinSpeed;
+        
+        // Keep player in bounds while spinning
+        if (player.x < 0) player.x = 0;
+        if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+        if (player.y < 0) player.y = 0;
+        if (player.y > canvas.height - player.height) player.y = canvas.height - player.height;
+        
+        // Update direction based on spin
+        if (Math.cos(time) > 0) player.direction = 'right';
+        else player.direction = 'left';
+    } else {
+        // Normal movement with WASD
+        if (keys['a'] || keys['A']) {
+            if (player.x > 0) player.x -= currentSpeed;
+            player.direction = 'left';
+        }
+        if (keys['d'] || keys['D']) {
+            if (player.x < canvas.width - player.width) player.x += currentSpeed;
+            player.direction = 'right';
+        }
+        if (keys['w'] || keys['W']) {
+            if (player.y > 0) player.y -= currentSpeed;
+            player.direction = 'up';
+        }
+        if (keys['s'] || keys['S']) {
+            if (player.y < canvas.height - player.height) player.y += currentSpeed;
+            player.direction = 'down';
+        }
     }
     
     checkCoinCollision();
@@ -548,7 +579,8 @@ function update() {
         }
     }
     
-    if (checkCollision() && canEnterPortal) {
+    // Only enter portal if not spinning in spiral
+    if (checkCollision() && canEnterPortal && !(equipped.spiral && inventory.spiral)) {
         canEnterPortal = false;
         showQuestionRoom();
     }
@@ -589,7 +621,8 @@ function updateInventoryDisplay() {
         greenCap: 'Green Cap',
         cape: 'Cape',
         face: 'Face',
-        flyingChair: 'Flying Chair'
+        flyingChair: 'Flying Chair',
+        spiral: 'Spiral'
     };
     
     for (let item in inventory) {
@@ -598,8 +631,8 @@ function updateInventoryDisplay() {
             div.className = 'inventory-item';
             div.innerHTML = `
                 <span>${itemNames[item]}</span>
-                <button class="equip-btn ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face)) ? 'equipped' : ''}" data-item="${item}">
-                    ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face)) ? 'Equipped' : 'Equip'}
+                <button class="equip-btn ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral)) ? 'equipped' : ''}" data-item="${item}">
+                    ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral)) ? 'Equipped' : 'Equip'}
                 </button>
             `;
             inventoryList.appendChild(div);
@@ -618,6 +651,8 @@ function updateInventoryDisplay() {
                 equipped.face = !equipped.face;
             } else if (item === 'flyingChair') {
                 equipped.chair = !equipped.chair;
+            } else if (item === 'spiral') {
+                equipped.spiral = !equipped.spiral;
             }
             
             saveProgress();
@@ -687,8 +722,8 @@ superResetBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to reset everything? This will delete all your coins, items, and score!')) {
         score = 0;
         coins = 5;
-        inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true };
-        equipped = { hat: 'blueHat', cape: false, face: false, chair: false };
+        inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false };
+        equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false };
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
         localStorage.removeItem('portalMathGame');
