@@ -485,11 +485,13 @@ function checkAnswer() {
         // Give 100 bonus coins on round 10!
         if (score === 10) {
             coins += 100;
+            feedbackEl.textContent = '✓ Correct! 🎉 BONUS: +100 Coins!';
+        } else {
+            feedbackEl.textContent = '✓ Correct!';
         }
         
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
-        feedbackEl.textContent = '✓ Correct!';
         feedbackEl.style.color = '#90EE90';
         saveProgress();
         
