@@ -523,13 +523,10 @@ function update() {
     
     // Handle spiral movement
     if (equipped.spiral && inventory.spiral) {
-        // Spin in circles automatically
-        const spinSpeed = 3;
-        const radius = 50;
-        const time = Date.now() / 200; // Controls spin speed
-        
-        const centerX = player.x + Math.cos(time) * radius;
-        const centerY = player.y + Math.sin(time) * radius;
+        // Spin in BIG circles across the whole screen - SUPER FAST!
+        const spinSpeed = 8; // Much faster!
+        const radius = 200; // HUGE circles to fill the screen!
+        const time = Date.now() / 100; // Faster spinning!
         
         player.x += Math.cos(time) * spinSpeed;
         player.y += Math.sin(time) * spinSpeed;
@@ -655,6 +652,11 @@ function updateInventoryDisplay() {
                 equipped.chair = !equipped.chair;
             } else if (item === 'spiral') {
                 equipped.spiral = !equipped.spiral;
+                // When unequipping spiral, teleport back to portal!
+                if (!equipped.spiral) {
+                    player.x = portal.x + portal.width / 2 - player.width / 2;
+                    player.y = portal.y + portal.height / 2 - player.height / 2;
+                }
             }
             
             saveProgress();
