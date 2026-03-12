@@ -731,10 +731,14 @@ function checkAnswer() {
         const coinValue = (equipped.petPortal && inventory.petPortal) ? 5 : 1;
         coins += coinValue;
         
-        // Give 100 bonus coins on round 10!
-        if (score === 10) {
-            coins += 100;
-            feedbackEl.textContent = '✓ Correct! 🎉 BONUS: +100 Coins!';
+        // Give free pet portal on round 29!
+        if (score === 29) {
+            if (!inventory.petPortal) {
+                inventory.petPortal = true;
+                feedbackEl.textContent = '✓ Correct! 🎉 FREE PET PORTAL!';
+            } else {
+                feedbackEl.textContent = '✓ Correct!';
+            }
         } else {
             feedbackEl.textContent = '✓ Correct!';
         }
