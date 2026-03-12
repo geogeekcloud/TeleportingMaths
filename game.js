@@ -29,11 +29,12 @@ let coinFrenzy = { active: false, timeLeft: 0, spawnTimer: 0 };
 let frenzyCoins = [];
 let keys = {};
 let canEnterPortal = true;
-let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false };
-let equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false };
+let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false, petPortal: false };
+let equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false, petPortal: false };
 let spiralStartTime = 0; // Track when spiral started
 let snakeTrail = []; // Array to store snake trail positions
 let cloneSquare = []; // Array to store clone positions in square formation
+let petPosition = { x: 0, y: 0 }; // Pet portal position
 
 function ensureNoOverlap() {
     const portalCenterX = portal.x + portal.width / 2;
@@ -111,8 +112,8 @@ function loadProgress() {
         const data = JSON.parse(saved);
         score = data.score || 0;
         coins = data.coins !== undefined ? data.coins : 5;
-        inventory = data.inventory || { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false };
-        equipped = data.equipped || { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false };
+        inventory = data.inventory || { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false, petPortal: false };
+        equipped = data.equipped || { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false, petPortal: false };
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
     } else {
@@ -667,6 +668,16 @@ function update() {
         }
     }
     
+    // Update pet portal position to follow player
+    if (equipped.petPortal && inventory.petPortal) {
+        // Pet follows player with a slight delay and bounces
+        const targetX = player.x + player.width / 2 - 30;
+        const targetY = player.y - 40 + Math.sin(Date.now() / 300) * 10; // Bouncing effect
+        
+        petPosition.x += (targetX - petPosition.x) * 0.1; // Smooth following
+        petPosition.y += (targetY - petPosition.y) * 0.1;
+    }
+    
     checkCoinCollision();
     
     // Update coin frenzy
@@ -704,6 +715,47 @@ function draw() {
     drawSuitcase();
     drawFrenzyCoins();
     drawPortal();
+    
+    // Draw pet portal
+    if (equipped.petPortal && inventory.petPortal) {
+        // Draw mini portal body
+        ctx.fillStyle = '#1E90FF';
+        ctx.beginPath();
+        ctx.arc(petPosition.x, petPosition.y, 20, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Inner portal circle
+        ctx.fillStyle = '#4169E1';
+        ctx.beginPath();
+        ctx.arc(petPosition.x, petPosition.y, 12, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Super cute eyes
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.arc(petPosition.x - 6, petPosition.y - 5, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(petPosition.x + 6, petPosition.y - 5, 3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // White sparkles in eyes
+        ctx.fillStyle = '#FFF';
+        ctx.beginPath();
+        ctx.arc(petPosition.x - 5, petPosition.y - 6, 1, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(petPosition.x + 7, petPosition.y - 6, 1, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Cute smile
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(petPosition.x, petPosition.y + 3, 6, 0, Math.PI);
+        ctx.stroke();
+    }
+    
     drawPlayer();
     
     // Draw frenzy timer
@@ -767,6 +819,7 @@ function updateInventoryDisplay() {
         flyingChair: 'Flying Chair',
         spiral: 'Spiral',
         snake: 'Snake',
+        petPortal: 'Pet Portal',
         cloner: 'Cloner'
     };
     
@@ -776,8 +829,8 @@ function updateInventoryDisplay() {
             div.className = 'inventory-item';
             div.innerHTML = `
                 <span>${itemNames[item]}</span>
-                <button class="equip-btn ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner) || (item === 'snake' && equipped.snake)) ? 'equipped' : ''}" data-item="${item}">
-                    ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner) || (item === 'snake' && equipped.snake)) ? 'Equipped' : 'Equip'}
+                <button class="equip-btn ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner) || (item === 'snake' && equipped.snake) || (item === 'petPortal' && equipped.petPortal)) ? 'equipped' : ''}" data-item="${item}">
+                    ${(equipped.hat === item || (item === 'flyingChair' && equipped.chair) || (item === 'cape' && equipped.cape) || (item === 'face' && equipped.face) || (item === 'spiral' && equipped.spiral) || (item === 'cloner' && equipped.cloner) || (item === 'snake' && equipped.snake) || (item === 'petPortal' && equipped.petPortal)) ? 'Equipped' : 'Equip'}
                 </button>
             `;
             inventoryList.appendChild(div);
@@ -818,7 +871,13 @@ function updateInventoryDisplay() {
             } else if (item === 'snake') {
                 equipped.snake = !equipped.snake;
                 if (!equipped.snake) {
-                    snakeTrail = []; // Clear snake trail when unequipped
+                    snakeTrail = [];
+                }
+            } else if (item === 'petPortal') {
+                equipped.petPortal = !equipped.petPortal;
+                if (equipped.petPortal) {
+                    petPosition.x = player.x - 30;
+                    petPosition.y = player.y - 40;
                 }
             }
             
@@ -889,8 +948,8 @@ superResetBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to reset everything? This will delete all your coins, items, and score!')) {
         score = 0;
         coins = 5;
-        inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false };
-        equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false };
+        inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false, petPortal: false };
+        equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false, petPortal: false };
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
         localStorage.removeItem('portalMathGame');
