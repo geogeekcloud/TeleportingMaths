@@ -1168,6 +1168,7 @@ window.addEventListener('keydown', (e) => {
         return;
     }
     keys[e.key] = true;
+    keys[e.key.toLowerCase()] = true;
     e.preventDefault();
 });
 
@@ -1176,6 +1177,7 @@ window.addEventListener('keyup', (e) => {
         return;
     }
     keys[e.key] = false;
+    keys[e.key.toLowerCase()] = false;
 });
 
 submitBtn.addEventListener('click', checkAnswer);
@@ -1269,76 +1271,124 @@ const btnRight = document.getElementById('btn-right');
 if (btnUp) {
     btnUp.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['w'] = true;
+        keys['W'] = true;
     });
     btnUp.addEventListener('touchend', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['w'] = false;
+        keys['W'] = false;
     });
     btnUp.addEventListener('mousedown', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['w'] = true;
+        keys['W'] = true;
     });
     btnUp.addEventListener('mouseup', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['w'] = false;
+        keys['W'] = false;
+    });
+    btnUp.addEventListener('mouseleave', (e) => {
+        keys['w'] = false;
+        keys['W'] = false;
     });
 }
 
 if (btnDown) {
     btnDown.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['s'] = true;
+        keys['S'] = true;
     });
     btnDown.addEventListener('touchend', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['s'] = false;
+        keys['S'] = false;
     });
     btnDown.addEventListener('mousedown', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['s'] = true;
+        keys['S'] = true;
     });
     btnDown.addEventListener('mouseup', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['s'] = false;
+        keys['S'] = false;
+    });
+    btnDown.addEventListener('mouseleave', (e) => {
+        keys['s'] = false;
+        keys['S'] = false;
     });
 }
 
 if (btnLeft) {
     btnLeft.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['a'] = true;
+        keys['A'] = true;
     });
     btnLeft.addEventListener('touchend', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['a'] = false;
+        keys['A'] = false;
     });
     btnLeft.addEventListener('mousedown', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['a'] = true;
+        keys['A'] = true;
     });
     btnLeft.addEventListener('mouseup', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['a'] = false;
+        keys['A'] = false;
+    });
+    btnLeft.addEventListener('mouseleave', (e) => {
+        keys['a'] = false;
+        keys['A'] = false;
     });
 }
 
 if (btnRight) {
     btnRight.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['d'] = true;
+        keys['D'] = true;
     });
     btnRight.addEventListener('touchend', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['d'] = false;
+        keys['D'] = false;
     });
     btnRight.addEventListener('mousedown', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['d'] = true;
+        keys['D'] = true;
     });
     btnRight.addEventListener('mouseup', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         keys['d'] = false;
+        keys['D'] = false;
+    });
+    btnRight.addEventListener('mouseleave', (e) => {
+        keys['d'] = false;
+        keys['D'] = false;
     });
 }
 

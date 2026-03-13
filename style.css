@@ -368,18 +368,20 @@ body {
 #btn-right { grid-area: right; }
 
 .touch-btn {
-    width: 60px;
-    height: 60px;
-    font-size: 28px;
-    background: rgba(255, 255, 255, 0.7);
-    border: 2px solid rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
+    width: 80px;
+    height: 80px;
+    font-size: 36px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 3px solid rgba(0, 0, 0, 0.4);
+    border-radius: 15px;
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: manipulation;
+    touch-action: none;
+    font-weight: bold;
 }
 
 .touch-btn:active {
-    background: rgba(255, 215, 0, 0.8);
+    background: rgba(255, 215, 0, 0.9);
+    transform: scale(0.95);
 }
