@@ -1116,7 +1116,119 @@ function drawBuildings() {
 function gameLoop() {
     update();
     draw();
+    updateItemInventory();
     requestAnimationFrame(gameLoop);
+}
+
+function updateItemInventory() {
+    // Update hat slot
+    const hatSlot = document.getElementById('slot-hat');
+    if (equipped.hat === 'yellowHat') {
+        hatSlot.textContent = '🟡';
+        hatSlot.classList.add('active');
+    } else if (equipped.hat === 'redCap') {
+        hatSlot.textContent = '🔴';
+        hatSlot.classList.add('active');
+    } else if (equipped.hat === 'greenCap') {
+        hatSlot.textContent = '🟢';
+        hatSlot.classList.add('active');
+    } else if (equipped.hat === 'blueHat') {
+        hatSlot.textContent = '🔵';
+        hatSlot.classList.add('active');
+    } else {
+        hatSlot.textContent = '';
+        hatSlot.classList.remove('active');
+    }
+    
+    // Update cape slot
+    const capeSlot = document.getElementById('slot-cape');
+    if (equipped.cape && inventory.cape) {
+        capeSlot.textContent = '🦸';
+        capeSlot.classList.add('active');
+    } else {
+        capeSlot.textContent = '';
+        capeSlot.classList.remove('active');
+    }
+    
+    // Update face slot
+    const faceSlot = document.getElementById('slot-face');
+    if (equipped.face && inventory.face) {
+        faceSlot.textContent = '😊';
+        faceSlot.classList.add('active');
+    } else {
+        faceSlot.textContent = '';
+        faceSlot.classList.remove('active');
+    }
+    
+    // Update chair slot
+    const chairSlot = document.getElementById('slot-chair');
+    if (equipped.chair && inventory.flyingChair) {
+        chairSlot.textContent = '🪑';
+        chairSlot.classList.add('active');
+    } else {
+        chairSlot.textContent = '';
+        chairSlot.classList.remove('active');
+    }
+    
+    // Update spiral slot
+    const spiralSlot = document.getElementById('slot-spiral');
+    if (equipped.spiral && inventory.spiral) {
+        spiralSlot.textContent = '🌀';
+        spiralSlot.classList.add('active');
+    } else {
+        spiralSlot.textContent = '';
+        spiralSlot.classList.remove('active');
+    }
+    
+    // Update snake slot
+    const snakeSlot = document.getElementById('slot-snake');
+    if (equipped.snake && inventory.snake) {
+        snakeSlot.textContent = '🐍';
+        snakeSlot.classList.add('active');
+    } else {
+        snakeSlot.textContent = '';
+        snakeSlot.classList.remove('active');
+    }
+    
+    // Update pet portal slot
+    const petSlot = document.getElementById('slot-pet');
+    if (equipped.petPortal && inventory.petPortal) {
+        petSlot.textContent = '🥰';
+        petSlot.classList.add('active');
+    } else {
+        petSlot.textContent = '';
+        petSlot.classList.remove('active');
+    }
+    
+    // Update skibidi slot
+    const skibidiSlot = document.getElementById('slot-skibidi');
+    if (equipped.skibidiMode && inventory.skibidiMode) {
+        skibidiSlot.textContent = '🚽';
+        skibidiSlot.classList.add('active');
+    } else {
+        skibidiSlot.textContent = '';
+        skibidiSlot.classList.remove('active');
+    }
+    
+    // Update cloner slot
+    const clonerSlot = document.getElementById('slot-cloner');
+    if (equipped.cloner && inventory.cloner) {
+        clonerSlot.textContent = '👥';
+        clonerSlot.classList.add('active');
+    } else {
+        clonerSlot.textContent = '';
+        clonerSlot.classList.remove('active');
+    }
+    
+    // Update fruit slot
+    const fruitSlot = document.getElementById('slot-fruit');
+    if (fruitPower === 'lightning') {
+        fruitSlot.textContent = '⚡';
+        fruitSlot.classList.add('active');
+    } else {
+        fruitSlot.textContent = '';
+        fruitSlot.classList.remove('active');
+    }
 }
 
 function updateInventoryDisplay() {
