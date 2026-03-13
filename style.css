@@ -416,3 +416,28 @@ body {
     border-color: #FFD700;
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
 }
+
+.inventory-slot.clickable {
+    cursor: pointer;
+}
+
+.inventory-slot.clickable:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.inventory-label {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+}
+
+.inventory-separator {
+    width: 2px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.3);
+    margin: 0 5px;
+}
