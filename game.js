@@ -36,6 +36,7 @@ let snakeTrail = []; // Array to store snake trail positions
 let cloneSquare = []; // Array to store clone positions in square formation
 let petPosition = { x: 0, y: 0 }; // Pet portal position
 let isIPad = /iPad|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
+let fruitPower = null; // Current fruit power (null, 'lightning', etc.)
 
 function ensureNoOverlap() {
     const portalCenterX = portal.x + portal.width / 2;
@@ -102,7 +103,8 @@ function saveProgress() {
         score,
         coins,
         inventory,
-        equipped
+        equipped,
+        fruitPower
     };
     localStorage.setItem('portalMathGame', JSON.stringify(saveData));
 }
@@ -115,6 +117,7 @@ function loadProgress() {
         coins = data.coins !== undefined ? data.coins : 5;
         inventory = data.inventory || { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false, petPortal: false, skibidiMode: false };
         equipped = data.equipped || { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false, petPortal: false, skibidiMode: false };
+        fruitPower = data.fruitPower || null;
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
     } else {
@@ -732,8 +735,12 @@ function checkAnswer() {
         const coinValue = (equipped.petPortal && inventory.petPortal) ? 5 : 1;
         coins += coinValue;
         
-        // Give free pet portal on round 29!
-        if (score === 29) {
+        // Give lightning fruit on round 28!
+        if (score === 28) {
+            fruitPower = 'lightning';
+            feedbackEl.textContent = '✓ Correct! ⚡ LIGHTNING FRUIT! 3x Speed!';
+        } else if (score === 29) {
+            // Give free pet portal on round 29!
             if (!inventory.petPortal) {
                 inventory.petPortal = true;
                 feedbackEl.textContent = '✓ Correct! 🎉 FREE PET PORTAL!';
@@ -776,8 +783,11 @@ function update() {
     const oldX = player.x;
     const oldY = player.y;
     
-    // Set speed based on flying chair
-    const currentSpeed = (equipped.chair === true && inventory.flyingChair === true) ? 18 : 2;
+    // Set speed based on flying chair and lightning fruit
+    let currentSpeed = (equipped.chair === true && inventory.flyingChair === true) ? 18 : 2;
+    if (fruitPower === 'lightning') {
+        currentSpeed = currentSpeed * 3; // 3x speed with lightning!
+    }
     
     // Handle spiral movement
     if (equipped.spiral && inventory.spiral) {
@@ -904,6 +914,36 @@ function draw() {
     drawSuitcase();
     drawFrenzyCoins();
     drawPortal();
+    
+    // Draw lightning fruit if equipped
+    if (fruitPower === 'lightning') {
+        const fruitX = canvas.width - 100;
+        const fruitY = 50;
+        
+        // Draw apple
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath();
+        ctx.arc(fruitX, fruitY, 15, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Lightning bolt on apple
+        ctx.fillStyle = '#FFFF00';
+        ctx.beginPath();
+        ctx.moveTo(fruitX, fruitY - 10);
+        ctx.lineTo(fruitX - 5, fruitY);
+        ctx.lineTo(fruitX, fruitY);
+        ctx.lineTo(fruitX - 5, fruitY + 10);
+        ctx.lineTo(fruitX + 5, fruitY);
+        ctx.lineTo(fruitX, fruitY);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Sparkles around fruit
+        ctx.fillStyle = '#FFFF00';
+        ctx.font = '20px Arial';
+        ctx.fillText('⚡', fruitX + 20, fruitY - 10);
+        ctx.fillText('⚡', fruitX - 30, fruitY + 10);
+    }
     
     // Draw Skibidi Toilet if equipped
     if (equipped.skibidiMode && inventory.skibidiMode) {
@@ -1228,6 +1268,7 @@ superResetBtn.addEventListener('click', () => {
         coins = 5;
         inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false, petPortal: false, skibidiMode: false };
         equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false, petPortal: false, skibidiMode: false };
+        fruitPower = null;
         scoreValue.textContent = score;
         coinsValue.textContent = coins;
         localStorage.removeItem('portalMathGame');
