@@ -1260,44 +1260,83 @@ spawnCoin();
 suitcase.collected = true; // Start with suitcase collected
 ensureNoOverlap();
 
-// Show touch controls if on iPad
-if (isIPad) {
-    const touchControls = document.getElementById('touch-controls');
-    touchControls.classList.remove('hidden');
-    
-    // Add touch button event listeners
-    document.getElementById('btn-up').addEventListener('touchstart', (e) => {
+// Add touch button event listeners for everyone
+const btnUp = document.getElementById('btn-up');
+const btnDown = document.getElementById('btn-down');
+const btnLeft = document.getElementById('btn-left');
+const btnRight = document.getElementById('btn-right');
+
+if (btnUp) {
+    btnUp.addEventListener('touchstart', (e) => {
         e.preventDefault();
         keys['w'] = true;
     });
-    document.getElementById('btn-up').addEventListener('touchend', (e) => {
+    btnUp.addEventListener('touchend', (e) => {
         e.preventDefault();
         keys['w'] = false;
     });
-    
-    document.getElementById('btn-down').addEventListener('touchstart', (e) => {
+    btnUp.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        keys['w'] = true;
+    });
+    btnUp.addEventListener('mouseup', (e) => {
+        e.preventDefault();
+        keys['w'] = false;
+    });
+}
+
+if (btnDown) {
+    btnDown.addEventListener('touchstart', (e) => {
         e.preventDefault();
         keys['s'] = true;
     });
-    document.getElementById('btn-down').addEventListener('touchend', (e) => {
+    btnDown.addEventListener('touchend', (e) => {
         e.preventDefault();
         keys['s'] = false;
     });
-    
-    document.getElementById('btn-left').addEventListener('touchstart', (e) => {
+    btnDown.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        keys['s'] = true;
+    });
+    btnDown.addEventListener('mouseup', (e) => {
+        e.preventDefault();
+        keys['s'] = false;
+    });
+}
+
+if (btnLeft) {
+    btnLeft.addEventListener('touchstart', (e) => {
         e.preventDefault();
         keys['a'] = true;
     });
-    document.getElementById('btn-left').addEventListener('touchend', (e) => {
+    btnLeft.addEventListener('touchend', (e) => {
         e.preventDefault();
         keys['a'] = false;
     });
-    
-    document.getElementById('btn-right').addEventListener('touchstart', (e) => {
+    btnLeft.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        keys['a'] = true;
+    });
+    btnLeft.addEventListener('mouseup', (e) => {
+        e.preventDefault();
+        keys['a'] = false;
+    });
+}
+
+if (btnRight) {
+    btnRight.addEventListener('touchstart', (e) => {
         e.preventDefault();
         keys['d'] = true;
     });
-    document.getElementById('btn-right').addEventListener('touchend', (e) => {
+    btnRight.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keys['d'] = false;
+    });
+    btnRight.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        keys['d'] = true;
+    });
+    btnRight.addEventListener('mouseup', (e) => {
         e.preventDefault();
         keys['d'] = false;
     });
