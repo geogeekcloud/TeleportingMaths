@@ -35,6 +35,7 @@ let spiralStartTime = 0; // Track when spiral started
 let snakeTrail = []; // Array to store snake trail positions
 let cloneSquare = []; // Array to store clone positions in square formation
 let petPosition = { x: 0, y: 0 }; // Pet portal position
+let isIPad = /iPad|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
 
 function ensureNoOverlap() {
     const portalCenterX = portal.x + portal.width / 2;
@@ -1258,4 +1259,11 @@ movePortal();
 spawnCoin();
 suitcase.collected = true; // Start with suitcase collected
 ensureNoOverlap();
+
+// Show iPad message if on iPad
+if (isIPad) {
+    console.log('Playing on iPad!');
+    // You can add special iPad features here
+}
+
 gameLoop();
