@@ -1260,10 +1260,47 @@ spawnCoin();
 suitcase.collected = true; // Start with suitcase collected
 ensureNoOverlap();
 
-// Show iPad message if on iPad
+// Show touch controls if on iPad
 if (isIPad) {
-    console.log('Playing on iPad!');
-    // You can add special iPad features here
+    const touchControls = document.getElementById('touch-controls');
+    touchControls.classList.remove('hidden');
+    
+    // Add touch button event listeners
+    document.getElementById('btn-up').addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keys['w'] = true;
+    });
+    document.getElementById('btn-up').addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keys['w'] = false;
+    });
+    
+    document.getElementById('btn-down').addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keys['s'] = true;
+    });
+    document.getElementById('btn-down').addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keys['s'] = false;
+    });
+    
+    document.getElementById('btn-left').addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keys['a'] = true;
+    });
+    document.getElementById('btn-left').addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keys['a'] = false;
+    });
+    
+    document.getElementById('btn-right').addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keys['d'] = true;
+    });
+    document.getElementById('btn-right').addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keys['d'] = false;
+    });
 }
 
 gameLoop();
