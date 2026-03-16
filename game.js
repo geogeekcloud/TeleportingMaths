@@ -35,7 +35,10 @@ let spiralStartTime = 0; // Track when spiral started
 let snakeTrail = []; // Array to store snake trail positions
 let cloneSquare = []; // Array to store clone positions in square formation
 let petPosition = { x: 0, y: 0 }; // Pet portal position
-let isIPad = /iPad|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
+let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+if (isTouchDevice) {
+    document.getElementById('touch-controls').style.display = 'grid';
+}
 
 function ensureNoOverlap() {
     const portalCenterX = portal.x + portal.width / 2;
