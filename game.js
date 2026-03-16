@@ -29,6 +29,7 @@ let coinFrenzy = { active: false, timeLeft: 0, spawnTimer: 0 };
 let frenzyCoins = [];
 let keys = {};
 let canEnterPortal = true;
+let answerLocked = false;
 let inventory = { yellowHat: false, redCap: false, greenCap: false, cape: false, face: false, flyingChair: false, blueHat: true, spiral: false, cloner: false, snake: false, petPortal: false, skibidiMode: false };
 let equipped = { hat: 'blueHat', cape: false, face: false, chair: false, spiral: false, cloner: false, snake: false, petPortal: false, skibidiMode: false };
 let spiralStartTime = 0; // Track when spiral started
@@ -514,6 +515,7 @@ function showQuestionRoom() {
     generateQuestion();
     answerInput.value = '';
     feedbackEl.textContent = '';
+    answerLocked = false;
     
     // Start animation loop for question room
     if (!questionRoom.dataset.animating) {
@@ -725,9 +727,11 @@ function showPortalRoom() {
 }
 
 function checkAnswer() {
+    if (answerLocked) return;
     const userAnswer = parseInt(answerInput.value);
     
     if (userAnswer === currentAnswer) {
+        answerLocked = true;
         score++;
         const coinValue = (equipped.petPortal && inventory.petPortal) ? 5 : 1;
         coins += coinValue;
