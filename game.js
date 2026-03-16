@@ -35,7 +35,7 @@ let spiralStartTime = 0; // Track when spiral started
 let snakeTrail = []; // Array to store snake trail positions
 let cloneSquare = []; // Array to store clone positions in square formation
 let petPosition = { x: 0, y: 0 }; // Pet portal position
-let isMobileOrTablet = /Android|iPad|iPhone|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 0 && window.innerWidth <= 1024);
+let isMobileOrTablet = window.matchMedia('(pointer: coarse)').matches;
 if (isMobileOrTablet) {
     document.getElementById('touch-controls').style.display = 'grid';
 }
