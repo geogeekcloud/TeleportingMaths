@@ -8,6 +8,12 @@
 </head>
 <body>
     <button id="how-made-btn">How I made this app</button>
+    <div id="touch-controls">
+        <button class="touch-btn" id="btn-up">↑</button>
+        <button class="touch-btn" id="btn-left">←</button>
+        <button class="touch-btn" id="btn-down">↓</button>
+        <button class="touch-btn" id="btn-right">→</button>
+    </div>
     <h1 id="game-title">Teleporting Maths</h1>
     <div id="game-container">
         <div id="score">Score: <span id="score-value">0</span> / 30</div>
@@ -18,13 +24,6 @@
         <div id="portal-room">
             <canvas id="game-canvas" width="800" height="600"></canvas>
             
-            <!-- Touch controls for iPad -->
-            <div id="touch-controls">
-                <button class="touch-btn" id="btn-up">↑</button>
-                <button class="touch-btn" id="btn-left">←</button>
-                <button class="touch-btn" id="btn-down">↓</button>
-                <button class="touch-btn" id="btn-right">→</button>
-            </div>
         </div>
         </div>
         
